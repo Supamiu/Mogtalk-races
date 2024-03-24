@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "mogtalk-race": {
+      "hosting": {
+        "mogtalk-race": [
+          "mogtalk-race"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "mogtalk-race"
+  }
+}
