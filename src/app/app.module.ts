@@ -1,5 +1,5 @@
 import {NgModule} from '@angular/core';
-import {BrowserModule} from '@angular/platform-browser';
+import {BrowserModule, provideClientHydration} from '@angular/platform-browser';
 
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
@@ -12,15 +12,23 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {NzLayoutModule} from "ng-zorro-antd/layout";
 import {NzMenuModule} from "ng-zorro-antd/menu";
 import {NzBreadCrumbModule} from "ng-zorro-antd/breadcrumb";
-import {NzIconModule} from "ng-zorro-antd/icon";
+import {NZ_ICONS, NzIconModule} from "ng-zorro-antd/icon";
 import {initializeApp, provideFirebaseApp} from '@angular/fire/app';
 import {environment} from '../environments/environment';
 import {getAuth, provideAuth} from '@angular/fire/auth';
 import {getFirestore, provideFirestore} from '@angular/fire/firestore';
 import {getStorage, provideStorage} from "@angular/fire/storage";
 import {NzMessageModule} from "ng-zorro-antd/message";
+import {IconDefinition} from '@ant-design/icons-angular';
+import {CrownOutline, HomeOutline, UnorderedListOutline} from '@ant-design/icons-angular/icons';
 
 registerLocaleData(en);
+
+const icons: IconDefinition[] = [
+  HomeOutline,
+  UnorderedListOutline,
+  CrownOutline
+]
 
 @NgModule({
   declarations: [
@@ -43,7 +51,9 @@ registerLocaleData(en);
     provideStorage(() => getStorage())
   ],
   providers: [
-    {provide: NZ_I18N, useValue: en_US}
+    {provide: NZ_I18N, useValue: en_US},
+    {provide: NZ_ICONS, useValue: icons},
+    provideClientHydration()
   ],
   bootstrap: [AppComponent]
 })

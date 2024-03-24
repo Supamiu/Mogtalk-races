@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/mogtalk-race",
+            "outputPath": "dist/mogtalk-race/browser",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": [
@@ -109,6 +109,61 @@
             "version": 2,
             "browserTarget": "mogtalk-race:build:production"
           }
+        },
+        "server": {
+          "builder": "@angular-devkit/build-angular:server",
+          "options": {
+            "outputPath": "dist/mogtalk-race/server",
+            "main": "server.ts",
+            "tsConfig": "tsconfig.server.json",
+            "inlineStyleLanguage": "less"
+          },
+          "configurations": {
+            "production": {
+              "outputHashing": "media"
+            },
+            "development": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "sourceMap": true,
+              "extractLicenses": false,
+              "vendorChunk": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve-ssr": {
+          "builder": "@angular-devkit/build-angular:ssr-dev-server",
+          "configurations": {
+            "development": {
+              "browserTarget": "mogtalk-race:build:development",
+              "serverTarget": "mogtalk-race:server:development"
+            },
+            "production": {
+              "browserTarget": "mogtalk-race:build:production",
+              "serverTarget": "mogtalk-race:server:production"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "prerender": {
+          "builder": "@angular-devkit/build-angular:prerender",
+          "options": {
+            "routes": [
+              "/"
+            ]
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "mogtalk-race:build:production",
+              "serverTarget": "mogtalk-race:server:production"
+            },
+            "development": {
+              "browserTarget": "mogtalk-race:build:development",
+              "serverTarget": "mogtalk-race:server:development"
+            }
+          },
+          "defaultConfiguration": "production"
         }
       }
     }
