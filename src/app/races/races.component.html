@@ -68,9 +68,9 @@
             </nz-select>
           </nz-form-control>
         </nz-form-item>
-        <nz-divider nzOrientation="left" nzText="Bosses"></nz-divider>
-        <nz-form-item *ngFor="let control of newRaceForm.controls.bosses.controls; let i = index">
-          <nz-form-control nzErrorTip="Please input passenger's name or delete this field.">
+        <nz-divider nzOrientation="left" nzText="Phases"></nz-divider>
+        <nz-form-item *ngFor="let control of newRaceForm.controls.phases.controls; let i = index">
+          <nz-form-control nzErrorTip="Please input phase's name or delete this field.">
             <nz-input-group [nzAddOnAfter]="i > 0 ? removeBossTpl : ''">
               <input
                 class="boss-name"
@@ -83,15 +83,15 @@
               nz-icon
               nzType="minus-circle-o"
               class="dynamic-delete-button"
-              (click)="removeBoss(i)"
+              (click)="removePhase(i)"
             ></span>
               </ng-template>
             </nz-input-group>
           </nz-form-control>
         </nz-form-item>
-        <button type="button" nz-button nzBlock nzType="primary" nzGhost (click)="addBoss()"><span nz-icon
-                                                                                                   nzType="plus-circle"
-                                                                                                   nzTheme="outline"></span>
+        <button type="button" nz-button nzBlock nzType="primary" nzGhost (click)="addPhase()"><span nz-icon
+                                                                                                    nzType="plus-circle"
+                                                                                                    nzTheme="outline"></span>
           Add another boss
         </button>
         <nz-divider></nz-divider>

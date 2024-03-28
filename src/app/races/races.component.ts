@@ -30,8 +30,7 @@ export class RacesComponent {
     name: new FormControl('', Validators.required),
     start: new FormControl<number>(Date.now()),
     type: new FormControl('', Validators.required),
-    phases: new FormArray([
-      new FormControl('', Validators.required)
+    phases: new FormArray<FormControl<string | null>>([
     ], Validators.required),
     banner: new FormControl('')
   });
@@ -72,11 +71,11 @@ export class RacesComponent {
       });
   }
 
-  removeBoss(index: number): void {
+  removePhase(index: number): void {
     this.newRaceForm.controls.phases.removeAt(index);
   }
 
-  addBoss(): void {
+  addPhase(): void {
     this.newRaceForm.controls.phases.push(new FormControl('', Validators.required))
   }
 

@@ -7,10 +7,9 @@
     </nz-card>
   </nz-col>
   <nz-col [nzLg]="8">
-    <nz-card nzTitle="New race">
+    <nz-card nzTitle="New team">
       <form nz-form [formGroup]="newTeamForm" class="login-form" (ngSubmit)="createTeam()">
         <nz-form-item>
-          <nz-form-label nzRequired>Name</nz-form-label>
           <nz-form-control nzErrorTip="Please input a name">
             <nz-input-group nzPrefixIcon="edit">
               <input type="text" nz-input formControlName="name" placeholder="Team's name"/>
@@ -19,14 +18,24 @@
         </nz-form-item>
         <nz-divider nzOrientation="left" nzText="Members"></nz-divider>
         <nz-form-item *ngFor="let control of newTeamForm.controls.members.controls; let i = index">
-          <nz-form-control nzErrorTip="Please input passenger's name or delete this field.">
-            <nz-input-group [nzAddOnAfter]="i > 0 ? removeMemberTpl : ''">
+          <nz-form-control nzErrorTip="Please input a lodestone id or delete this field." [nzValidateStatus]="control" [nzExtra]="lodestoneIdCheckTpl">
+            <nz-input-group [nzAddOnAfter]="removeMemberTpl">
               <input
                 class="boss-name"
                 nz-input
-                placeholder="Name of the boss"
+                type="number"
+                min="0"
+                placeholder="Member's lodestone ID"
                 [formControl]="control"
               />
+              <ng-template #lodestoneIdCheckTpl>
+                <ng-container *ngIf="lodestoneIdCharacters[i] | async as char; else baseTipTpl">
+                  {{char.Character.Name}} on {{char.Character.World}}
+                </ng-container>
+                <ng-template #baseTipTpl>
+                  The id it the last part of the url when opening your character profile in the lodestone
+                </ng-template>
+              </ng-template>
               <ng-template #removeMemberTpl>
             <span
               nz-icon
