@@ -1,0 +1,51 @@
+<nz-row [nzGutter]="16">
+  <nz-col [nzLg]="6" *ngFor="let team of teams$ | async">
+    <nz-card>
+      <h2>{{team.name}}</h2>
+
+      <h3>{{team.members.length}} members</h3>
+    </nz-card>
+  </nz-col>
+  <nz-col [nzLg]="8">
+    <nz-card nzTitle="New race">
+      <form nz-form [formGroup]="newTeamForm" class="login-form" (ngSubmit)="createTeam()">
+        <nz-form-item>
+          <nz-form-label nzRequired>Name</nz-form-label>
+          <nz-form-control nzErrorTip="Please input a name">
+            <nz-input-group nzPrefixIcon="edit">
+              <input type="text" nz-input formControlName="name" placeholder="Team's name"/>
+            </nz-input-group>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-divider nzOrientation="left" nzText="Members"></nz-divider>
+        <nz-form-item *ngFor="let control of newTeamForm.controls.members.controls; let i = index">
+          <nz-form-control nzErrorTip="Please input passenger's name or delete this field.">
+            <nz-input-group [nzAddOnAfter]="i > 0 ? removeMemberTpl : ''">
+              <input
+                class="boss-name"
+                nz-input
+                placeholder="Name of the boss"
+                [formControl]="control"
+              />
+              <ng-template #removeMemberTpl>
+            <span
+              nz-icon
+              nzType="minus-circle-o"
+              class="dynamic-delete-button"
+              (click)="removeMember(i)"
+            ></span>
+              </ng-template>
+            </nz-input-group>
+          </nz-form-control>
+        </nz-form-item>
+        <button type="button" nz-button nzBlock nzType="primary" nzGhost (click)="addMember()"><span nz-icon
+                                                                                                   nzType="plus-circle"
+                                                                                                   nzTheme="outline"></span>
+          Add another member
+        </button>
+        <nz-divider></nz-divider>
+        <button nz-button [nzType]="'primary'" [disabled]="!newTeamForm.valid" nzBlock>Create a team</button>
+      </form>
+    </nz-card>
+  </nz-col>
+</nz-row>

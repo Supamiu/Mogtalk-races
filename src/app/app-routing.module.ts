@@ -7,6 +7,10 @@ const routes: Routes = [
     loadComponent: () => import('./races/races.component').then(c => c.RacesComponent)
   },
   {
+    path: 'teams',
+    loadComponent: () => import('./teams/teams.component').then(c => c.TeamsComponent)
+  },
+  {
     path: 'race/:id/:name',
     loadComponent: () => import('./race/race.component').then(c => c.RaceComponent)
   }

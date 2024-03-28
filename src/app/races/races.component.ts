@@ -14,7 +14,6 @@ import {NzIconModule} from "ng-zorro-antd/icon";
 import {NzUploadModule} from "ng-zorro-antd/upload";
 import {NzDividerModule} from "ng-zorro-antd/divider";
 import {NzSpinModule} from "ng-zorro-antd/spin";
-import {Race} from "../model/race";
 import {NzMessageService} from "ng-zorro-antd/message";
 import {NzTagModule} from "ng-zorro-antd/tag";
 import {RouterLink} from "@angular/router";
@@ -31,7 +30,7 @@ export class RacesComponent {
     name: new FormControl('', Validators.required),
     start: new FormControl<number>(Date.now()),
     type: new FormControl('', Validators.required),
-    bosses: new FormArray([
+    phases: new FormArray([
       new FormControl('', Validators.required)
     ], Validators.required),
     banner: new FormControl('')
@@ -74,15 +73,18 @@ export class RacesComponent {
   }
 
   removeBoss(index: number): void {
-    this.newRaceForm.controls.bosses.removeAt(index);
+    this.newRaceForm.controls.phases.removeAt(index);
   }
 
   addBoss(): void {
-    this.newRaceForm.controls.bosses.push(new FormControl('', Validators.required))
+    this.newRaceForm.controls.phases.push(new FormControl('', Validators.required))
   }
 
   createRace(): void {
-    this.raceService.addOne(this.newRaceForm.getRawValue() as any).subscribe(() => {
+    this.raceService.addOne({
+      ...this.newRaceForm.getRawValue(),
+      teams: []
+    } as any).subscribe(() => {
       this.notification.success('Race has been created !');
       this.newRaceForm.reset();
       this.croppedImage = '';

@@ -9,7 +9,7 @@
 
       <h3>{{race.type}}</h3>
 
-      <p>{{race.bosses.length}} Bosses</p>
+      <p *ngIf="race.phases.length > 0">{{race.phases.length}} Bosses</p>
 
       <nz-tag>Started: {{race.start.toDate() | date:'medium'}}</nz-tag>
     </nz-card>

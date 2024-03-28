@@ -20,14 +20,14 @@ import {getFirestore, provideFirestore} from '@angular/fire/firestore';
 import {getStorage, provideStorage} from "@angular/fire/storage";
 import {NzMessageModule} from "ng-zorro-antd/message";
 import {IconDefinition} from '@ant-design/icons-angular';
-import {CrownOutline, HomeOutline, UnorderedListOutline} from '@ant-design/icons-angular/icons';
+import {TeamOutline, HomeOutline, UnorderedListOutline} from '@ant-design/icons-angular/icons';
 
 registerLocaleData(en);
 
 const icons: IconDefinition[] = [
   HomeOutline,
   UnorderedListOutline,
-  CrownOutline
+  TeamOutline
 ]
 
 @NgModule({
