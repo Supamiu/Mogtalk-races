@@ -1,60 +1,58 @@
-<nz-row [nzGutter]="16">
-  <nz-col [nzLg]="6" *ngFor="let team of teams$ | async">
-    <nz-card>
-      <h2>{{team.name}}</h2>
+<nz-page-header nzTitle="Teams" nzSubtitle="Manage your teams, create, edit and delete them from here">
+  <nz-page-header-extra>
+    <button nz-button nzType="primary" (click)="openCreationPopup()">Create a new Team</button>
+  </nz-page-header-extra>
+</nz-page-header>
 
-      <h3>{{team.members.length}} members</h3>
-    </nz-card>
-  </nz-col>
-  <nz-col [nzLg]="8">
-    <nz-card nzTitle="New team">
-      <form nz-form [formGroup]="newTeamForm" class="login-form" (ngSubmit)="createTeam()">
-        <nz-form-item>
-          <nz-form-control nzErrorTip="Please input a name">
-            <nz-input-group nzPrefixIcon="edit">
-              <input type="text" nz-input formControlName="name" placeholder="Team's name"/>
-            </nz-input-group>
-          </nz-form-control>
-        </nz-form-item>
-        <nz-divider nzOrientation="left" nzText="Members"></nz-divider>
-        <nz-form-item *ngFor="let control of newTeamForm.controls.members.controls; let i = index">
-          <nz-form-control nzErrorTip="Please input a lodestone id or delete this field." [nzValidateStatus]="control" [nzExtra]="lodestoneIdCheckTpl">
-            <nz-input-group [nzAddOnAfter]="removeMemberTpl">
-              <input
-                class="boss-name"
-                nz-input
-                type="number"
-                min="0"
-                placeholder="Member's lodestone ID"
-                [formControl]="control"
-              />
-              <ng-template #lodestoneIdCheckTpl>
-                <ng-container *ngIf="lodestoneIdCharacters[i] | async as char; else baseTipTpl">
-                  {{char.Character.Name}} on {{char.Character.World}}
-                </ng-container>
-                <ng-template #baseTipTpl>
-                  The id it the last part of the url when opening your character profile in the lodestone
-                </ng-template>
-              </ng-template>
-              <ng-template #removeMemberTpl>
-            <span
-              nz-icon
-              nzType="minus-circle-o"
-              class="dynamic-delete-button"
-              (click)="removeMember(i)"
-            ></span>
-              </ng-template>
-            </nz-input-group>
-          </nz-form-control>
-        </nz-form-item>
-        <button type="button" nz-button nzBlock nzType="primary" nzGhost (click)="addMember()"><span nz-icon
-                                                                                                   nzType="plus-circle"
-                                                                                                   nzTheme="outline"></span>
-          Add another member
-        </button>
-        <nz-divider></nz-divider>
-        <button nz-button [nzType]="'primary'" [disabled]="!newTeamForm.valid" nzBlock>Create a team</button>
-      </form>
-    </nz-card>
-  </nz-col>
+<nz-row [nzGutter]="16">
+  @for (team of teams$ | async; track team.$key) {
+    <nz-col [nzLg]="8">
+      <nz-card [nzTitle]="team.name" [nzExtra]="deleteTeamTpl">
+        <ng-template #deleteTeamTpl>
+          <button nz-button nzDanger nz-popconfirm nzPopconfirmTitle="Are you sure? This cannot be undone."
+                  (nzOnConfirm)="removeTeam(team)">
+            <span nz-icon nzType="delete" nzTheme="outline"></span>
+          </button>
+        </ng-template>
+
+        <nz-divider nzText="{{team.members.length}} members" nzOrientation="left"></nz-divider>
+
+        <nz-list nzSize="small" nzBordered>
+          @for (member of team.members; track member; let index = $index) {
+            @if (member | character | async; as c) {
+              @if (c.notFound) {
+                <nz-list-item [nzExtra]="removeMemberTpl">
+                  <nz-list-item-meta nzTitle="Not found" nzDescription="Character with ID {{member}} it not found"
+                                     [nzAvatar]="avatarTpl">
+                    <ng-template #avatarTpl>
+                      <span nz-icon nzType="close-circle" nzTheme="twotone" nzTwotoneColor="red"></span>
+                    </ng-template>
+                  </nz-list-item-meta>
+                </nz-list-item>
+              } @else {
+                <nz-list-item [nzExtra]="removeMemberTpl">
+                  <nz-list-item-meta nzTitle="{{c.Character.Name}} <{{c.Character.Title}}>"
+                                     [nzDescription]="c.Character.World"
+                                     [nzAvatar]="c.Character.Avatar">
+                  </nz-list-item-meta>
+                </nz-list-item>
+              }
+            }
+            <ng-template #removeMemberTpl>
+              <button nz-button nzDanger nz-popconfirm nzPopconfirmTitle="Are you sure? This cannot be undone."
+                      (nzOnConfirm)="removeTeamMember(team, index)" nzSize="small">
+                <span nz-icon nzType="delete" nzTheme="outline"></span>
+              </button>
+            </ng-template>
+          } @empty {
+            <nz-empty nzNotFoundContent="This team has no members"></nz-empty>
+          }
+        </nz-list>
+      </nz-card>
+    </nz-col>
+  } @empty {
+    <div class="not-found-container" nz-flex nzJustify="center" nzAlign="center">
+      <nz-empty nzNotFoundImage="simple" nzNotFoundContent="You have no teams"></nz-empty>
+    </div>
+  }
 </nz-row>

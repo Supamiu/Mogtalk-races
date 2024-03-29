@@ -1,0 +1,47 @@
+<form nz-form [formGroup]="form" (ngSubmit)="form.valid ? register() : null">
+  <nz-form-item>
+    <nz-form-control nzHasFeedback nzErrorTip="Invalid Lodestone ID" [nzExtra]="lodestoneIdCheckTpl">
+      <nz-form-label nzFor="lodestoneId" nzRequired>Lodestone ID</nz-form-label>
+      <nz-input-group nzPrefixIcon="user">
+        <input type="number" nz-input formControlName="lodestoneId" placeholder="XXXXXXX"/>
+      </nz-input-group>
+      <ng-template #lodestoneIdCheckTpl>
+        <ng-container *ngIf="characterDisplay() as char; else baseTipTpl">
+          {{ char.name }} on {{ char.server }}
+        </ng-container>
+        <ng-template #baseTipTpl>
+          The id it the last part of the url when opening your character profile in the lodestone
+        </ng-template>
+      </ng-template>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-control nzHasFeedback>
+      <nz-form-label nzFor="email" nzRequired>Email</nz-form-label>
+      <nz-input-group nzPrefixIcon="user">
+        <input type="email" nz-input formControlName="email" placeholder="tataru@taru.ez"/>
+      </nz-input-group>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-control nzHasFeedback>
+      <nz-form-label nzFor="password" nzRequired>Password</nz-form-label>
+      <nz-input-group nzPrefixIcon="lock">
+        <input type="password" nz-input formControlName="password" placeholder="XXXXXXXXXXXXXX"/>
+      </nz-input-group>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-control nzHasFeedback>
+      <nz-form-label nzFor="passwordRepeat" nzRequired>Password Confirmation</nz-form-label>
+      <nz-input-group nzPrefixIcon="lock">
+        <input type="password" nz-input formControlName="passwordRepeat" placeholder="XXXXXXXXXXXXXX"/>
+      </nz-input-group>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-alert *ngIf="form.hasError('passwordMissmatch')" nzMessage="Passwords do not match" nzType="error"
+            nzShowIcon></nz-alert>
+  <nz-alert *ngIf="error$ | async as error" [nzMessage]="error" nzType="error" nzShowIcon></nz-alert>
+  <nz-divider></nz-divider>
+  <button nz-button nzBlock [nzType]="'primary'" [disabled]="form.invalid">Register</button>
+</form>

@@ -21,6 +21,10 @@ import {getStorage, provideStorage} from "@angular/fire/storage";
 import {NzMessageModule} from "ng-zorro-antd/message";
 import {IconDefinition} from '@ant-design/icons-angular';
 import {TeamOutline, HomeOutline, UnorderedListOutline} from '@ant-design/icons-angular/icons';
+import {NzButtonComponent} from "ng-zorro-antd/button";
+import {NzFlexDirective} from "ng-zorro-antd/flex";
+import {NzModalModule} from "ng-zorro-antd/modal";
+import {NzAvatarComponent} from "ng-zorro-antd/avatar";
 
 registerLocaleData(en);
 
@@ -48,7 +52,11 @@ const icons: IconDefinition[] = [
     provideFirebaseApp(() => initializeApp(environment.firebase)),
     provideAuth(() => getAuth()),
     provideFirestore(() => getFirestore()),
-    provideStorage(() => getStorage())
+    provideStorage(() => getStorage()),
+    NzButtonComponent,
+    NzFlexDirective,
+    NzModalModule,
+    NzAvatarComponent
   ],
   providers: [
     {provide: NZ_I18N, useValue: en_US},

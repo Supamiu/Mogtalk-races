@@ -1,0 +1,64 @@
+<form nz-form [formGroup]="newTeamForm" (ngSubmit)="newTeamForm.valid ? createTeam() : null">
+  <nz-form-item>
+    <nz-form-control nzErrorTip="Please input a name">
+      <nz-input-group nzPrefixIcon="edit">
+        <input type="text" nz-input formControlName="name" placeholder="Team's name"/>
+      </nz-input-group>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-divider nzOrientation="left" nzText="Members"></nz-divider>
+  <nz-list nzSize="small">
+    @for (member of newTeamForm.value.members; track member; let index = $index; let last = $last) {
+      @if (member | character | async; as c) {
+        @if (!c.notFound) {
+          <nz-list-item [nzExtra]="removeMemberTpl" [class.last]="last">
+            <nz-list-item-meta [nzTitle]="c.Character.Name" [nzDescription]="c.Character.World"
+                               [nzAvatar]="c.Character.Avatar">
+            </nz-list-item-meta>
+          </nz-list-item>
+          <ng-template #removeMemberTpl>
+            <button nz-button nzDanger (click)="removeMemberFromForm(index)" nzSize="small">
+              <span nz-icon nzType="delete" nzTheme="outline"></span>
+            </button>
+          </ng-template>
+        }
+      }
+    }
+  </nz-list>
+  <nz-divider nzText="Add a new member" nzOrientation="left"></nz-divider>
+  <nz-form-item>
+    <nz-form-control>
+      <nz-input-group [nzSuffix]="addTpl">
+        <input
+          nz-input
+          type="number"
+          placeholder="Member's lodestone ID"
+          [(ngModel)]="newMember"
+          [ngModelOptions]="{standalone: true}"
+        />
+      </nz-input-group>
+      <ng-template #addTpl>
+        <button type="button" nz-button nzType="primary" nzSearch (click)="addMember()"
+                [disabled]="(newMember | character | async)?.notFound">
+          <span nz-icon nzType="plus-circle" nzTheme="outline"></span>
+        </button>
+      </ng-template>
+      @if(newMember | character | async; as preview){
+          <nz-list>
+            <nz-list-item class="preview">
+              @if(preview.notFound){
+                <nz-list-item-meta nzTitle="Preview" nzDescription="Enter a valid lodestone ID to get a preview here">
+                </nz-list-item-meta>
+              } @else {
+                <nz-list-item-meta [nzAvatar]="preview.Character.Avatar" [nzTitle]="preview.Character.Name" [nzDescription]="preview.Character.World">
+                </nz-list-item-meta>
+              }
+            </nz-list-item>
+          </nz-list>
+      }
+    </nz-form-control>
+  </nz-form-item>
+
+  <nz-divider></nz-divider>
+  <button nz-button type="submit" [nzType]="'primary'" [disabled]="!newTeamForm.valid" nzBlock>Create a team</button>
+</form>

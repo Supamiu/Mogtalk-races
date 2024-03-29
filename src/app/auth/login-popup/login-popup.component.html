@@ -1,0 +1,19 @@
+<form [formGroup]="form" (ngSubmit)="form.valid ? signIn() : null">
+  <nz-form-item>
+    <nz-form-control nzHasFeedback>
+      <nz-form-label nzFor="email" nzRequired>Email</nz-form-label>
+      <nz-input-group nzPrefixIcon="user">
+        <input type="email" nz-input formControlName="email" placeholder="tataru@taru.ez"/>
+      </nz-input-group>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-control nzHasFeedback>
+      <nz-form-label nzFor="password" nzRequired>Password</nz-form-label>
+      <nz-input-group nzPrefixIcon="lock">
+        <input type="password" nz-input formControlName="password" placeholder="XXXXXXXXXXXXXX"/>
+      </nz-input-group>
+    </nz-form-control>
+  </nz-form-item>
+  <button nz-button nzBlock [nzType]="'primary'" [disabled]="form.invalid">Sign in</button>
+</form>
