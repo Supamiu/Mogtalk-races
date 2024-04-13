@@ -1,0 +1,70 @@
+@if (race$ | async; as race) {
+  @defer (when teams$ | async) {
+    @if (teams$ | async; as teams) {
+      <ng-template #emptyTpl>
+        <nz-empty [nzNotFoundContent]="notFoundContent">
+          <ng-template #notFoundContent>
+            No teams registered on this race yet <br><br>
+            <button nz-button nzType="primary" (click)="registerTeam.emit()">Register teams</button>
+          </ng-template>
+        </nz-empty>
+      </ng-template>
+      <nz-table #teamsTable [nzData]="teams" [nzPageSize]="25" [nzNoResult]="emptyTpl" nzHideOnSinglePage>
+        <thead>
+        <tr>
+          @for (column of columns$ | async; track column.name) {
+            @if (column.filterFn) {
+              @if (column.possibleValues) {
+                <th [nzSortFn]="column.comparator" [nzSortPriority]="column.priority"
+                    [nzFilters]="column.possibleValues || []" [nzFilterFn]="column.filterFn || null">
+                  {{ column.name }}
+                </th>
+              }
+            } @else {
+              <th [nzSortFn]="column.comparator" [nzSortPriority]="column.priority">{{ column.name }}</th>
+            }
+          }
+          @if (!race.stopped && (userIsTracker$ | async)) {
+            <th>
+            </th>
+          }
+        </tr>
+        </thead>
+        <tbody>
+          @for (team of teamsTable.data; track team.$key) {
+            <tr>
+              <td>{{ team.rank }}</td>
+              <td>{{ team.name }}</td>
+              <td>{{ team.datacenter }}</td>
+              <td>{{ team.region }}</td>
+              @if (race.phases.length > 0) {
+                @for (phase of race.phases; track phase; let i = $index) {
+                  <td>{{team.clears[i] || ''}}</td>
+                }
+              } @else {
+                <td>{{team.clears[0] || ''}}</td>
+              }
+              <td>
+                @if (team.twitchLink) {
+                  <a [href]="team.twitchLink" target="_blank">{{ team.twitchLink }}</a>
+                } @else {
+                  No
+                }
+              </td>
+              @if (!race.stopped && (userIsTracker$ | async)) {
+                <td>
+                  <button nz-button nzDanger nzSize="small" nz-popconfirm nzPopconfirmTitle="Are you sure?"
+                          (nzOnConfirm)="withdrawTeam(race, team)">
+                    <label nz-icon nzType="delete"></label>
+                  </button>
+                </td>
+              }
+            </tr>
+          }
+        </tbody>
+      </nz-table>
+    }
+  } @loading {
+    <nz-spin nzSize="large"></nz-spin>
+  }
+}

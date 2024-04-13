@@ -6,16 +6,18 @@
     <ul nz-menu nzTheme="dark" nzMode="horizontal">
       <li nz-menu-item routerLink="/"><span nz-icon nzType="home" nzTheme="outline"></span> Home</li>
       <li nz-menu-item routerLink="/races"><span nz-icon nzType="unordered-list" nzTheme="outline"></span> Races</li>
-      <li nz-menu-item routerLink="/teams"><span nz-icon nzType="team" nzTheme="outline"></span>Teams</li>
+      @if (auth.userIsTracker$ | async) {
+        <li nz-menu-item routerLink="/teams"><span nz-icon nzType="team" nzTheme="outline"></span>Teams</li>
+      }
     </ul>
     <div class="spacer"></div>
     @if (auth.loggedIn$ | async) {
-      @if(character$ | async; as c) {
+      @if (character$ | async; as c) {
         <div nz-flex nzAlign="center" nzGap="small">
           <nz-avatar [nzSrc]="c.Character.Avatar"></nz-avatar>
           <div class="character-name">
-            {{c.Character.Name}}<br>
-            {{c.Character.World}}
+            {{ c.Character.Name }}<br>
+            {{ c.Character.World }}
           </div>
           <button nz-button nzDanger (click)="signOut()">Sign out</button>
         </div>

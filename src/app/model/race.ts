@@ -8,5 +8,10 @@ export interface Race extends DataModel {
   phases: string[];
   start: Timestamp;
   banner: string;
-  teams: Team[];
+  teams: string[];
+  stopped?: boolean;
 }
+
+/**
+ * We want to be able to save a clear timestamp per phase
+ */

@@ -20,6 +20,10 @@ export class AuthService {
     switchMap(u => this.#usersService.getOne(u.uid))
   );
 
+  userIsTracker$ = this.user$.pipe(
+    map(user => user.tracker || user.admin)
+  );
+
   loggedIn$ = authState(this.#afAuth).pipe(
     map(Boolean)
   )

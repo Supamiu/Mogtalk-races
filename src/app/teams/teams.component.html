@@ -1,58 +1,75 @@
-<nz-page-header nzTitle="Teams" nzSubtitle="Manage your teams, create, edit and delete them from here">
+<nz-page-header nzTitle="Teams" nzSubtitle="Manage teams, create, edit and delete them from here">
   <nz-page-header-extra>
     <button nz-button nzType="primary" (click)="openCreationPopup()">Create a new Team</button>
   </nz-page-header-extra>
+  <nz-page-header-content>
+    <nz-input-group nzPrefixIcon="search">
+      <input type="text" placeholder="Search for a team" nz-input [ngModel]="query$ | async" (ngModelChange)="query$.next($event)">
+    </nz-input-group>
+  </nz-page-header-content>
 </nz-page-header>
 
 <nz-row [nzGutter]="16">
   @for (team of teams$ | async; track team.$key) {
-    <nz-col [nzLg]="8">
-      <nz-card [nzTitle]="team.name" [nzExtra]="deleteTeamTpl">
+    <nz-col [nzLg]="6">
+      <nz-card [nzTitle]="team.name" [nzExtra]="deleteTeamTpl" nzSize="small">
         <ng-template #deleteTeamTpl>
-          <button nz-button nzDanger nz-popconfirm nzPopconfirmTitle="Are you sure? This cannot be undone."
+          <button nzSize="small" nz-button nzDanger nz-popconfirm
+                  nzPopconfirmTitle="Are you sure? This cannot be undone."
                   (nzOnConfirm)="removeTeam(team)">
             <span nz-icon nzType="delete" nzTheme="outline"></span>
           </button>
         </ng-template>
-
-        <nz-divider nzText="{{team.members.length}} members" nzOrientation="left"></nz-divider>
-
-        <nz-list nzSize="small" nzBordered>
-          @for (member of team.members; track member; let index = $index) {
-            @if (member | character | async; as c) {
-              @if (c.notFound) {
-                <nz-list-item [nzExtra]="removeMemberTpl">
-                  <nz-list-item-meta nzTitle="Not found" nzDescription="Character with ID {{member}} it not found"
-                                     [nzAvatar]="avatarTpl">
-                    <ng-template #avatarTpl>
-                      <span nz-icon nzType="close-circle" nzTheme="twotone" nzTwotoneColor="red"></span>
-                    </ng-template>
-                  </nz-list-item-meta>
-                </nz-list-item>
-              } @else {
-                <nz-list-item [nzExtra]="removeMemberTpl">
-                  <nz-list-item-meta nzTitle="{{c.Character.Name}} <{{c.Character.Title}}>"
-                                     [nzDescription]="c.Character.World"
-                                     [nzAvatar]="c.Character.Avatar">
-                  </nz-list-item-meta>
-                </nz-list-item>
-              }
-            }
-            <ng-template #removeMemberTpl>
-              <button nz-button nzDanger nz-popconfirm nzPopconfirmTitle="Are you sure? This cannot be undone."
-                      (nzOnConfirm)="removeTeamMember(team, index)" nzSize="small">
-                <span nz-icon nzType="delete" nzTheme="outline"></span>
-              </button>
+        <nz-statistic nzTitle="Datacenter" [nzValue]="team.datacenter">
+        </nz-statistic>
+        <nz-statistic nzTitle="Region" [nzValue]="team.region">
+        </nz-statistic>
+        @if (team.twitchLink) {
+          <nz-statistic nzTitle="Twitch" [nzValueTemplate]="twitchLinkTpl">
+            <ng-template #twitchLinkTpl>
+              <a [href]="team.twitchLink" target="_blank">{{ team.twitchLink }}</a>
             </ng-template>
-          } @empty {
-            <nz-empty nzNotFoundContent="This team has no members"></nz-empty>
-          }
-        </nz-list>
+          </nz-statistic>
+        }
+        <!--If we want to add members:-->
+        <!--        <nz-divider nzText="{{team.members.length}} members" nzOrientation="left"></nz-divider>-->
+
+        <!--        <nz-list nzSize="small" nzBordered>-->
+        <!--          @for (member of team.members; track member; let index = $index) {-->
+        <!--            @if (member | character | async; as c) {-->
+        <!--              @if (c.notFound) {-->
+        <!--                <nz-list-item [nzExtra]="removeMemberTpl">-->
+        <!--                  <nz-list-item-meta nzTitle="Not found" nzDescription="Character with ID {{member}} it not found"-->
+        <!--                                     [nzAvatar]="avatarTpl">-->
+        <!--                    <ng-template #avatarTpl>-->
+        <!--                      <span nz-icon nzType="close-circle" nzTheme="twotone" nzTwotoneColor="red"></span>-->
+        <!--                    </ng-template>-->
+        <!--                  </nz-list-item-meta>-->
+        <!--                </nz-list-item>-->
+        <!--              } @else {-->
+        <!--                <nz-list-item [nzExtra]="removeMemberTpl">-->
+        <!--                  <nz-list-item-meta nzTitle="{{c.Character.Name}} <{{c.Character.Title}}>"-->
+        <!--                                     [nzDescription]="c.Character.World"-->
+        <!--                                     [nzAvatar]="c.Character.Avatar">-->
+        <!--                  </nz-list-item-meta>-->
+        <!--                </nz-list-item>-->
+        <!--              }-->
+        <!--            }-->
+        <!--            <ng-template #removeMemberTpl>-->
+        <!--              <button nz-button nzDanger nz-popconfirm nzPopconfirmTitle="Are you sure? This cannot be undone."-->
+        <!--                      (nzOnConfirm)="removeTeamMember(team, index)" nzSize="small">-->
+        <!--                <span nz-icon nzType="delete" nzTheme="outline"></span>-->
+        <!--              </button>-->
+        <!--            </ng-template>-->
+        <!--          } @empty {-->
+        <!--            <nz-empty nzNotFoundContent="This team has no members"></nz-empty>-->
+        <!--          }-->
+        <!--        </nz-list>-->
       </nz-card>
     </nz-col>
   } @empty {
     <div class="not-found-container" nz-flex nzJustify="center" nzAlign="center">
-      <nz-empty nzNotFoundImage="simple" nzNotFoundContent="You have no teams"></nz-empty>
+      <nz-spin nzTip="Loading teams" nzSize="large"></nz-spin>
     </div>
   }
 </nz-row>

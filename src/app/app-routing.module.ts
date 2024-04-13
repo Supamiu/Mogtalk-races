@@ -13,6 +13,10 @@ const routes: Routes = [
   {
     path: 'race/:id/:name',
     loadComponent: () => import('./race/race.component').then(c => c.RaceComponent)
+  },
+  {
+    path: '',
+    loadComponent: () => import('./home/home.component').then(c => c.HomeComponent)
   }
 ];
 

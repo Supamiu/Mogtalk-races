@@ -99,7 +99,8 @@ export abstract class FirestoreStorage<T extends DataModel> {
     return from(setDoc(this.docRef(key), row));
   }
 
-  public updateOne(key: string, row: UpdateData<T>): Observable<void> {
+  public updateOne(_key: string | undefined, row: UpdateData<T>): Observable<void> {
+    const key = _key as string;
     if (this.updateSources[key]) {
       this.updateSources[key].next(row);
     }

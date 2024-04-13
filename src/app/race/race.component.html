@@ -1,0 +1,34 @@
+@defer (when race$ | async) {
+  @if (race$ | async; as race) {
+    <nz-page-header [nzTitle]="race.name" [nzSubtitle]="race.type">
+      <nz-page-header-tags>
+        @switch (status$ | async) {
+          @case ("Running") {
+            <nz-tag class="running-tag">Running since {{ race.start.toMillis() | date:'medium' }}</nz-tag>
+          }
+          @case ("Planned") {
+            <nz-tag class="planned-tag">Starting on {{ race.start.toMillis() | date:'medium' }}</nz-tag>
+          }
+        }
+      </nz-page-header-tags>
+      <nz-page-header-extra>
+        <nz-space>
+          @if (!race.stopped) {
+            @if (userIsTracker$ | async) {
+              <button *nzSpaceItem nz-button nzType="primary" (click)="registerTeam(race)">Register teams</button>
+            }
+            @if ((isAdmin$ | async)) {
+              <button *nzSpaceItem nz-button nzDanger nzType="primary" nz-popconfirm
+                      nzPopconfirmTitle="Are you sure? This cannot be undone" (nzOnConfirm)="stopRace(race)">Stop
+              </button>
+            }
+          }
+        </nz-space>
+      </nz-page-header-extra>
+    </nz-page-header>
+    <nz-divider nzOrientation="left" nzText="Leaderboard"></nz-divider>
+    <app-leaderboard [race]="race" (registerTeam)="registerTeam(race)"></app-leaderboard>
+  }
+} @loading {
+  <nz-spin nzSize="large"></nz-spin>
+}

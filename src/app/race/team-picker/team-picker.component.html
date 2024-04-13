@@ -1,0 +1,20 @@
+<nz-input-group nzPrefixIcon="search">
+  <input type="text" [ngModel]="query$ | async" (ngModelChange)="query$.next($event)" nz-input>
+</nz-input-group>
+<nz-list class="teams-list">
+  @for(team of availableTeams$ | async; track team.$key){
+    <nz-list-item>
+      <div>
+        <label nz-checkbox [ngModel]="false" (ngModelChange)="toggleSelection(team, $event)"></label>&nbsp;{{team.name}} ({{team.region}}/{{team.datacenter}})
+      </div>
+    </nz-list-item>
+  } @empty {
+    <nz-empty nzNotFoundContent="No teams available"></nz-empty>
+  }
+</nz-list>
+<nz-divider></nz-divider>
+<nz-space>
+  <button nz-button *nzSpaceItem nzType="primary" [disabled]="selection.length === 0" (click)="register()">Register {{selection.length}} teams</button>
+  <button nz-button *nzSpaceItem (click)="cancel()">Cancel</button>
+</nz-space>
+
