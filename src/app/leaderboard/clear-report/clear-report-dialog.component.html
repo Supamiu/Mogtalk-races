@@ -1,0 +1,38 @@
+<form nz-form [formGroup]="form" (ngSubmit)="submit()">
+  <nz-form-item>
+    <nz-form-label nzFor="team" nzRequired>Team</nz-form-label>
+    <nz-form-control>
+      <nz-select formControlName="team" nzShowSearch>
+        @for (team of data.teams; track team.$key) {
+          <nz-option [nzLabel]="team.name" [nzValue]="team"></nz-option>
+        }
+      </nz-select>
+    </nz-form-control>
+  </nz-form-item>
+  @if (data.race.phases.length > 0) {
+    <nz-form-item>
+      <nz-form-label nzFor="phase" nzRequired>Phase</nz-form-label>
+      <nz-form-control>
+        <nz-select formControlName="phase" nzShowSearch>
+          @for (phase of data.race.phases; track phase) {
+            <nz-option [nzLabel]="phase" [nzValue]="phase"></nz-option>
+          }
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+  }
+  <nz-form-item>
+    <nz-form-label nzFor="date" nzRequired>Time</nz-form-label>
+    <nz-form-control>
+      <nz-date-picker formControlName="date" nzShowTime></nz-date-picker>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-label nzFor="screenshot" nzRequired>Screenshot</nz-form-label>
+    <nz-form-control>
+      <input type="file" name="screenshot" accept="image/*" nz-input (change)="fileChange($event)"/>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-divider></nz-divider>
+  <button type="submit" nz-button nzType="primary" nzBlock [disabled]="form.invalid || !screenshot || loading" [nzLoading]="loading">Submit</button>
+</form>

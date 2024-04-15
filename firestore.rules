@@ -1,0 +1,31 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function getUser(uid){
+      return get(/databases/$(database)/documents/users/$(uid)).data;
+    }
+
+    function userIsAdminOrTracker(uid) {
+      let user = getUser(uid);
+      return user.tracker || user.admin
+    }
+
+    match /races/{race} {
+      allow read;
+      allow write: if getUser(request.auth.uid).admin;
+    }
+    match /teams/{race} {
+      allow read;
+      allow write: if userIsAdminOrTracker(request.auth.uid);
+    }
+    match /users/{user} {
+    	allow create, read;
+      allow update: if userIsAdminOrTracker(request.auth.uid);
+    }
+    match /clear-reports/{report} {
+      allow create;
+      allow read, write: if userIsAdminOrTracker(request.auth.uid);
+    }
+  }
+}

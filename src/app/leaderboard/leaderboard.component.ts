@@ -16,6 +16,8 @@ import {NzPopconfirmDirective} from "ng-zorro-antd/popconfirm";
 import {NzIconDirective} from "ng-zorro-antd/icon";
 import {DATACENTERS, REGION_PER_DC} from "../core/game-data";
 import {LeaderboardEntry} from "./leaderboard-entry";
+import {NzModalService} from "ng-zorro-antd/modal";
+import {ClearReportDialogComponent} from "./clear-report/clear-report-dialog.component";
 
 @Component({
   selector: 'app-leaderboard',
@@ -41,10 +43,16 @@ export class LeaderboardComponent {
 
   #authService = inject(AuthService);
 
+  #dialog = inject(NzModalService);
+
   race = input<Race>();
 
   race$ = toObservable(this.race).pipe(
     filter(Boolean)
+  );
+
+  raceIsRunning$ = this.race$.pipe(
+    map(race => !race.stopped && race.start.toMillis() < Date.now())
   );
 
   @Output()
@@ -127,6 +135,18 @@ export class LeaderboardComponent {
       })
     })
   );
+
+  openReportForm(teams: Team[]): void {
+    this.#dialog.create({
+      nzContent: ClearReportDialogComponent,
+      nzData: {
+        race: this.race(),
+        teams
+      },
+      nzTitle: 'Report clear/progress',
+      nzFooter: null
+    });
+  }
 
   withdrawTeam(race: Race, team: Team): void {
     this.#raceService.updateOne(race.$key, {teams: arrayRemove(team.$key)});

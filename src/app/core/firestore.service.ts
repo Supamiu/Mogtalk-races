@@ -23,8 +23,11 @@ import {
   writeBatch
 } from "@angular/fire/firestore";
 import {QueryConstraint} from "@firebase/firestore";
+import {inject} from "@angular/core";
 
 export abstract class FirestoreStorage<T extends DataModel> {
+
+  protected firestore = inject(Firestore);
 
   protected converter: FirestoreDataConverter<T> = {
     toFirestore: (modelObject: WithFieldValue<T>): DocumentData => {
@@ -46,9 +49,6 @@ export abstract class FirestoreStorage<T extends DataModel> {
   protected setSources: Record<string, Subject<T>> = {};
 
   protected readonly collection = collection(this.firestore, this.getCollectionName()).withConverter(this.converter);
-
-  protected constructor(protected firestore: Firestore) {
-  }
 
   protected docRef(key: string): DocumentReference<T> {
     return doc(this.firestore, this.getCollectionName(), key).withConverter(this.converter);

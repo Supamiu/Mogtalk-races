@@ -1,6 +1,5 @@
 import {FirestoreStorage} from "../core/firestore.service";
 import {inject, Injectable} from "@angular/core";
-import {Firestore} from "@angular/fire/firestore";
 import {User} from "../model/user";
 import {HttpClient} from "@angular/common/http";
 import {catchError, Observable, of, shareReplay} from "rxjs";
@@ -13,10 +12,6 @@ export class UsersService extends FirestoreStorage<User> {
   #http = inject(HttpClient);
 
   charactersCache: Record<number, Observable<any>> = {};
-
-  constructor(firestore: Firestore) {
-    super(firestore);
-  }
 
   getCharacter(lodestoneId: number) {
     if (!this.charactersCache[lodestoneId]) {

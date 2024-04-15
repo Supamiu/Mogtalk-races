@@ -9,6 +9,9 @@
           </ng-template>
         </nz-empty>
       </ng-template>
+      @if(teams.length > 0 && (raceIsRunning$ | async)) {
+        <button nz-button nzBlock nzType="primary" class="report-button" (click)="openReportForm(teams)">Report clear/progress</button>
+      }
       <nz-table #teamsTable [nzData]="teams" [nzPageSize]="25" [nzNoResult]="emptyTpl" nzHideOnSinglePage>
         <thead>
         <tr>
