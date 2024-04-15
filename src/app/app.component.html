@@ -7,7 +7,8 @@
       <li nz-menu-item routerLink="/"><span nz-icon nzType="home" nzTheme="outline"></span> Home</li>
       <li nz-menu-item routerLink="/races"><span nz-icon nzType="unordered-list" nzTheme="outline"></span> Races</li>
       @if (auth.userIsTracker$ | async) {
-        <li nz-menu-item routerLink="/teams"><span nz-icon nzType="team" nzTheme="outline"></span>Teams</li>
+        <li nz-menu-item routerLink="/teams"><span nz-icon nzType="team" nzTheme="outline"></span> Teams</li>
+        <li nz-menu-item routerLink="/reports"><nz-badge [nzCount]="(reportsCount$ | async) || 0" [nzOffset]="[10,0]"><span nz-icon nzType="audit" nzTheme="outline"></span> <span>Reports</span></nz-badge></li>
       }
     </ul>
     <div class="spacer"></div>

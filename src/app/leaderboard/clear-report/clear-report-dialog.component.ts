@@ -13,8 +13,9 @@ import {NzDividerComponent} from "ng-zorro-antd/divider";
 import {Timestamp} from "@angular/fire/firestore";
 import {getDownloadURL, ref, Storage, uploadBytes} from "@angular/fire/storage";
 import {ClearReportsService} from "../../database/clear-reports.service";
-import {Observable, switchMap} from "rxjs";
+import {Observable, switchMap, withLatestFrom} from "rxjs";
 import {NzMessageService} from "ng-zorro-antd/message";
+import {AuthService} from "../../auth/auth.service";
 
 @Component({
   selector: 'app-clear-report-dialog',
@@ -43,6 +44,8 @@ export class ClearReportDialogComponent {
 
   #ref = inject(NzModalRef);
 
+  #auth = inject(AuthService);
+
   #message = inject(NzMessageService);
 
   data: { teams: Team[], race: Race } = inject(NZ_MODAL_DATA);
@@ -52,6 +55,7 @@ export class ClearReportDialogComponent {
   form = new FormGroup({
     team: new FormControl<Team | null>(null, Validators.required),
     date: new FormControl(new Date(), Validators.required),
+    phase: new FormControl('', this.data.race.phases.length > 0 ? Validators.required : []),
     screenshot: new FormControl(''),
   });
 
@@ -68,7 +72,8 @@ export class ClearReportDialogComponent {
       return;
     }
     const raw: any = this.form.getRawValue();
-    const fileRef = ref(this.#afs, `clear-reports/${this.data.race.$key}/${raw.team.name}/${raw.phase || 'clear'}-${raw.date.toISOString()}-${this.screenshot.name}`);
+    const reportId = this.#reportsService.generateId();
+    const fileRef = ref(this.#afs, `clear-reports/${this.data.race.name}/${raw.team.name}/${reportId}.png`);
     new Observable<string>(observer => {
       this.screenshot?.arrayBuffer().then(buffer => {
         uploadBytes(fileRef, buffer, {contentType: this.screenshot?.type}).then(snap => {
@@ -79,12 +84,17 @@ export class ClearReportDialogComponent {
         })
       });
     }).pipe(
-      switchMap(url => {
-        return this.#reportsService.addOne({
+      withLatestFrom(this.#auth.userIsTracker$),
+      switchMap(([url, userIsTracker]) => {
+        return this.#reportsService.setOne(reportId, {
           date: Timestamp.fromDate(raw.date),
           team: raw.team.$key,
+          teamName: raw.team.name,
           phase: raw.phase || null,
-          screenshot: url
+          screenshot: url,
+          race: this.data.race.$key || '',
+          raceName: this.data.race?.name,
+          accepted: userIsTracker
         })
       })
     ).subscribe(() => {

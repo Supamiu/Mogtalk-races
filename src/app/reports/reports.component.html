@@ -1,0 +1,44 @@
+<nz-page-header nzTitle="Reports manager" nzSubtitle="Accept/decline reports from here"></nz-page-header>
+@defer (when reports$ | async) {
+  @if (reports$ | async; as reports) {
+    <nz-table #reportsTable [nzData]="reports" nzHideOnSinglePage>
+      <thead>
+      <tr>
+        @for (column of columns$ | async; track column.name) {
+          <th [nzSortFn]="column.comparator || null"
+              [nzSortDirections]="column.comparator ? ['ascend', 'descend'] : [null]"
+              [nzShowFilter]="column.possibleValues !== undefined"
+              [nzFilters]="column.possibleValues || []" [nzFilterFn]="column.filterFn || null">
+            {{ column.name }}
+          </th>
+        }
+        <th></th>
+      </tr>
+      </thead>
+      <tbody>
+        @for (report of reportsTable.data; track report.$key) {
+          <tr>
+            <td>{{ report.raceName }} @if (report.phase) {
+              / {{ report.phase }}
+            }</td>
+            <td>{{ report.teamName }}</td>
+            <td>{{ report.date.toMillis() | date:'medium' }}</td>
+            <td><a href="{{report.screenshot}}" target="_blank">Open Screenshot</a></td>
+            <td>
+              <nz-space>
+                <button *nzSpaceItem nz-button nzType="primary" nzSize="small" nz-popconfirm
+                        nzPopconfirmTitle="Are you sure?" (nzOnConfirm)="accept(report)"><span nz-icon nzType="check"
+                                                                                               nzTheme="outline"></span>
+                </button>
+                <button *nzSpaceItem nz-button nzDanger nzSize="small" nz-popconfirm nzPopconfirmTitle="Are you sure?"
+                        (nzOnConfirm)="reject(report)"><span nz-icon nzType="close" nzTheme="outline"></span></button>
+              </nz-space>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </nz-table>
+  }
+} @loading {
+  <nz-spin nzSize="large"></nz-spin>
+}

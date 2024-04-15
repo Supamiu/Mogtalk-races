@@ -60,7 +60,7 @@ export abstract class FirestoreStorage<T extends DataModel> {
     );
   }
 
-  public getOne(key: string, isForCurrentUser = false): Observable<T> {
+  public getOne(key: string): Observable<T> {
     if (!this.cache[key]) {
       const source$ = docData(this.docRef(key)).pipe(
         distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
@@ -113,6 +113,10 @@ export abstract class FirestoreStorage<T extends DataModel> {
 
   protected batch(): WriteBatch {
     return writeBatch(this.firestore);
+  }
+
+  generateId(): string {
+    return doc(this.collection).id;
   }
 
   protected abstract getCollectionName(): string;

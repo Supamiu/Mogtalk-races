@@ -1,13 +1,13 @@
 import {Component, EventEmitter, inject, input, Output} from '@angular/core';
 import {Race} from "../model/race";
 import {toObservable} from "@angular/core/rxjs-interop";
-import {filter, map, Observable, of, switchMap} from "rxjs";
+import {combineLatest, filter, map, Observable, of, switchMap} from "rxjs";
 import {Team} from "../model/team";
 import {arrayRemove, documentId, where} from "@angular/fire/firestore";
 import {TeamsService} from "../database/teams.service";
 import {RaceService} from "../database/race.service";
 import {NzSpinComponent} from "ng-zorro-antd/spin";
-import {AsyncPipe} from "@angular/common";
+import {AsyncPipe, DatePipe} from "@angular/common";
 import {NzEmptyComponent} from "ng-zorro-antd/empty";
 import {NzTableModule, NzThAddOnComponent} from "ng-zorro-antd/table";
 import {AuthService} from "../auth/auth.service";
@@ -18,6 +18,7 @@ import {DATACENTERS, REGION_PER_DC} from "../core/game-data";
 import {LeaderboardEntry} from "./leaderboard-entry";
 import {NzModalService} from "ng-zorro-antd/modal";
 import {ClearReportDialogComponent} from "./clear-report/clear-report-dialog.component";
+import {ClearReportsService} from "../database/clear-reports.service";
 
 @Component({
   selector: 'app-leaderboard',
@@ -30,7 +31,8 @@ import {ClearReportDialogComponent} from "./clear-report/clear-report-dialog.com
     NzThAddOnComponent,
     NzButtonComponent,
     NzPopconfirmDirective,
-    NzIconDirective
+    NzIconDirective,
+    DatePipe
   ],
   templateUrl: './leaderboard.component.html',
   styleUrl: './leaderboard.component.less'
@@ -38,6 +40,7 @@ import {ClearReportDialogComponent} from "./clear-report/clear-report-dialog.com
 export class LeaderboardComponent {
 
   #teamsService = inject(TeamsService);
+  #reportsService = inject(ClearReportsService);
 
   #raceService = inject(RaceService);
 
@@ -100,12 +103,12 @@ export class LeaderboardComponent {
         ...(race.phases.length > 0 ? race.phases.map((phase, i) => {
           return {
             name: phase,
-            comparator: (a: any, b: any) => a.phases[i] - b.phases[i],
+            comparator: (a: any, b: any) => (a.clears[i]?.getTime() || Infinity) - (b.clears[i]?.getTime() || Infinity),
             priority: 1
           }
         }) : [{
           name: 'Clear',
-          comparator: (a: any, b: any) => a.phases[0] - b.phases[0],
+          comparator: (a: any, b: any) => (a.clears[0]?.getTime() || Infinity) - (b.clears[0]?.getTime() || Infinity),
           priority: 1
         }]),
         {
@@ -117,23 +120,54 @@ export class LeaderboardComponent {
     })
   );
 
-  teams$: Observable<LeaderboardEntry[]> = this.race$.pipe(
+  reports$ = this.race$.pipe(
     switchMap(race => {
+      return this.#reportsService.query(where('race', '==', race.$key), where('accepted', '==', true));
+    })
+  );
+
+  teams$: Observable<LeaderboardEntry[]> = combineLatest([this.race$, this.reports$]).pipe(
+    switchMap(([race, reports]) => {
       if (race.teams.length > 0) {
-        return this.#teamsService.query(where(documentId(), 'in', race.teams))
+        return this.#teamsService.query(where(documentId(), 'in', race.teams)).pipe(
+          map(teams => {
+            return teams
+              .map((team, i) => {
+                const teamClears = reports.filter(report => report.team === team.$key);
+                let clearsDisplay: Array<Date | undefined> = teamClears.map(clear => clear.date.toDate());
+                if (race.phases.length > 0) {
+                  clearsDisplay = race.phases.map(phase => {
+                    return teamClears.find(clear => clear.phase === phase)?.date.toDate();
+                  });
+                }
+                return {
+                  ...team,
+                  rank: i + 1,
+                  clears: clearsDisplay
+                }
+              })
+              .sort((a, b) => {
+                const aClears = [...a.clears].reverse();
+                const bClears = [...b.clears].reverse();
+                // Find first non-undefined clear
+                const lastAClear = aClears.findIndex(Boolean);
+                const lastBClear = bClears.findIndex(Boolean);
+                if (lastAClear === -1) {
+                  return 1;
+                }
+                if (lastBClear === -1) {
+                  return -1;
+                }
+                if (lastAClear === lastBClear) {
+                  return aClears[lastAClear]?.getTime()! - bClears[lastBClear]?.getTime()!;
+                }
+                return lastAClear - lastBClear;
+              })
+          })
+        )
       }
       return of([]);
     }),
-    map(teams => {
-      // TODO proper ranking here
-      return teams.map((team, i) => {
-        return {
-          ...team,
-          rank: i + 1,
-          clears: []
-        }
-      })
-    })
   );
 
   openReportForm(teams: Team[]): void {

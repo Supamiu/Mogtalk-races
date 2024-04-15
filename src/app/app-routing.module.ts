@@ -1,5 +1,6 @@
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
+import {trackerGuard} from "./guards/tracker.guard";
 
 const routes: Routes = [
   {
@@ -8,7 +9,13 @@ const routes: Routes = [
   },
   {
     path: 'teams',
-    loadComponent: () => import('./teams/teams.component').then(c => c.TeamsComponent)
+    loadComponent: () => import('./teams/teams.component').then(c => c.TeamsComponent),
+    canActivate: [trackerGuard]
+  },
+  {
+    path: 'reports',
+    loadComponent: () => import('./reports/reports.component').then(c => c.ReportsComponent),
+    canActivate: [trackerGuard]
   },
   {
     path: 'race/:id/:name',

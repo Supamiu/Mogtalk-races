@@ -9,8 +9,10 @@
           </ng-template>
         </nz-empty>
       </ng-template>
-      @if(teams.length > 0 && (raceIsRunning$ | async)) {
-        <button nz-button nzBlock nzType="primary" class="report-button" (click)="openReportForm(teams)">Report clear/progress</button>
+      @if (teams.length > 0 && (raceIsRunning$ | async)) {
+        <button nz-button nzBlock nzType="primary" class="report-button" (click)="openReportForm(teams)">Report
+          clear/progress
+        </button>
       }
       <nz-table #teamsTable [nzData]="teams" [nzPageSize]="25" [nzNoResult]="emptyTpl" nzHideOnSinglePage>
         <thead>
@@ -42,10 +44,10 @@
               <td>{{ team.region }}</td>
               @if (race.phases.length > 0) {
                 @for (phase of race.phases; track phase; let i = $index) {
-                  <td>{{team.clears[i] || ''}}</td>
+                  <td>{{ team.clears[i] | date:'short' || '' }}</td>
                 }
               } @else {
-                <td>{{team.clears[0] || ''}}</td>
+                <td>{{ team.clears[0] | date:'short' || '' }}</td>
               }
               <td>
                 @if (team.twitchLink) {

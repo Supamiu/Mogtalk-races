@@ -25,6 +25,7 @@ import {NzButtonComponent} from "ng-zorro-antd/button";
 import {NzFlexDirective} from "ng-zorro-antd/flex";
 import {NzModalModule} from "ng-zorro-antd/modal";
 import {NzAvatarComponent} from "ng-zorro-antd/avatar";
+import {NzBadgeComponent} from "ng-zorro-antd/badge";
 
 registerLocaleData(en);
 
@@ -38,26 +39,27 @@ const icons: IconDefinition[] = [
   declarations: [
     AppComponent
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    FormsModule,
-    HttpClientModule,
-    BrowserAnimationsModule,
-    NzLayoutModule,
-    NzMenuModule,
-    NzBreadCrumbModule,
-    NzIconModule,
-    NzMessageModule,
-    provideFirebaseApp(() => initializeApp(environment.firebase)),
-    provideAuth(() => getAuth()),
-    provideFirestore(() => getFirestore()),
-    provideStorage(() => getStorage()),
-    NzButtonComponent,
-    NzFlexDirective,
-    NzModalModule,
-    NzAvatarComponent
-  ],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        FormsModule,
+        HttpClientModule,
+        BrowserAnimationsModule,
+        NzLayoutModule,
+        NzMenuModule,
+        NzBreadCrumbModule,
+        NzIconModule,
+        NzMessageModule,
+        provideFirebaseApp(() => initializeApp(environment.firebase)),
+        provideAuth(() => getAuth()),
+        provideFirestore(() => getFirestore()),
+        provideStorage(() => getStorage()),
+        NzButtonComponent,
+        NzFlexDirective,
+        NzModalModule,
+        NzAvatarComponent,
+        NzBadgeComponent
+    ],
   providers: [
     {provide: NZ_I18N, useValue: en_US},
     {provide: NZ_ICONS, useValue: icons},
