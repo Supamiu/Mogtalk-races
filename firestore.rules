@@ -15,17 +15,16 @@ service cloud.firestore {
       allow read;
       allow write: if getUser(request.auth.uid).admin;
     }
-    match /teams/{race} {
-      allow read;
-      allow write: if userIsAdminOrTracker(request.auth.uid);
+    match /teams/{team} {
+      allow read, write;
     }
     match /users/{user} {
-    	allow create, read;
+    	allow read, create;
       allow update: if userIsAdminOrTracker(request.auth.uid);
     }
     match /clear-reports/{report} {
-      allow create;
-      allow read, write: if userIsAdminOrTracker(request.auth.uid);
+      allow read, create;
+      allow write: if userIsAdminOrTracker(request.auth.uid);
     }
   }
 }

@@ -1,7 +1,7 @@
 import {Component, EventEmitter, inject, input, Output} from '@angular/core';
 import {Race} from "../model/race";
 import {toObservable} from "@angular/core/rxjs-interop";
-import {combineLatest, filter, map, Observable, of, switchMap} from "rxjs";
+import {catchError, combineLatest, filter, map, Observable, of, switchMap} from "rxjs";
 import {Team} from "../model/team";
 import {arrayRemove, documentId, where} from "@angular/fire/firestore";
 import {TeamsService} from "../database/teams.service";
@@ -40,6 +40,7 @@ import {ClearReportsService} from "../database/clear-reports.service";
 export class LeaderboardComponent {
 
   #teamsService = inject(TeamsService);
+
   #reportsService = inject(ClearReportsService);
 
   #raceService = inject(RaceService);
@@ -142,7 +143,6 @@ export class LeaderboardComponent {
                 }
                 return {
                   ...team,
-                  rank: i + 1,
                   clears: clearsDisplay
                 }
               })
@@ -162,6 +162,11 @@ export class LeaderboardComponent {
                   return aClears[lastAClear]?.getTime()! - bClears[lastBClear]?.getTime()!;
                 }
                 return lastAClear - lastBClear;
+              })
+              .map((team, i) => {
+                return {
+                  ...team, rank: i + 1
+                }
               })
           })
         )

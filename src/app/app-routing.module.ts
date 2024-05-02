@@ -10,12 +10,10 @@ const routes: Routes = [
   {
     path: 'teams',
     loadComponent: () => import('./teams/teams.component').then(c => c.TeamsComponent),
-    canActivate: [trackerGuard]
   },
   {
     path: 'reports',
     loadComponent: () => import('./reports/reports.component').then(c => c.ReportsComponent),
-    canActivate: [trackerGuard]
   },
   {
     path: 'race/:id/:name',
