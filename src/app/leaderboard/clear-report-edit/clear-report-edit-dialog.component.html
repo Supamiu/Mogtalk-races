@@ -1,0 +1,30 @@
+<form nz-form>
+  <nz-form-item>
+    <nz-form-label nzFor="team" nzRequired>Team</nz-form-label>
+    <nz-form-control>
+      {{data.report.team}}
+    </nz-form-control>
+  </nz-form-item>
+  @if (data.race.phases.length > 0) {
+    <nz-form-item>
+      <nz-form-label nzFor="phase" nzRequired>Phase</nz-form-label>
+      <nz-form-control>
+        {{data.report.phase}}
+      </nz-form-control>
+    </nz-form-item>
+  }
+  <nz-form-item>
+    <nz-form-label nzFor="date" nzRequired>Time</nz-form-label>
+    <nz-form-control nzExtra="Clear time in your timezone">
+      <nz-date-picker name="date" [(ngModel)]="date" nzShowTime></nz-date-picker>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-label nzFor="screenshot" nzRequired>Screenshot</nz-form-label>
+    <nz-form-control>
+      <img [src]="data.report.screenshot" alt="Clear screenshot">
+    </nz-form-control>
+  </nz-form-item>
+  <nz-divider></nz-divider>
+  <button type="submit" nz-button nzType="primary" nzBlock (click)="submit()" [disabled]="!date">Submit</button>
+</form>

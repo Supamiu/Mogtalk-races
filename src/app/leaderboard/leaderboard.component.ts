@@ -1,7 +1,7 @@
 import {Component, EventEmitter, inject, input, Output} from '@angular/core';
 import {Race} from "../model/race";
 import {toObservable} from "@angular/core/rxjs-interop";
-import {catchError, combineLatest, filter, map, Observable, of, switchMap} from "rxjs";
+import {combineLatest, filter, map, Observable, of, switchMap} from "rxjs";
 import {Team} from "../model/team";
 import {arrayRemove, documentId, where} from "@angular/fire/firestore";
 import {TeamsService} from "../database/teams.service";
@@ -19,6 +19,9 @@ import {LeaderboardEntry} from "./leaderboard-entry";
 import {NzModalService} from "ng-zorro-antd/modal";
 import {ClearReportDialogComponent} from "./clear-report/clear-report-dialog.component";
 import {ClearReportsService} from "../database/clear-reports.service";
+import {NzDividerComponent} from "ng-zorro-antd/divider";
+import {ClearReport} from "../model/clear-report";
+import {ClearReportEditDialogComponent} from "./clear-report-edit/clear-report-edit-dialog.component";
 
 @Component({
   selector: 'app-leaderboard',
@@ -32,7 +35,8 @@ import {ClearReportsService} from "../database/clear-reports.service";
     NzButtonComponent,
     NzPopconfirmDirective,
     NzIconDirective,
-    DatePipe
+    DatePipe,
+    NzDividerComponent
   ],
   templateUrl: './leaderboard.component.html',
   styleUrl: './leaderboard.component.less'
@@ -135,15 +139,27 @@ export class LeaderboardComponent {
             return teams
               .map((team, i) => {
                 const teamClears = reports.filter(report => report.team === team.$key);
-                let clearsDisplay: Array<Date | undefined> = teamClears.map(clear => clear.date.toDate());
+                let clearsDisplay: Array<{ date: Date, clear: ClearReport } | undefined> = teamClears.map(clear => {
+                  return {
+                    date: clear.date.toDate(),
+                    clear
+                  }
+                });
                 if (race.phases.length > 0) {
                   clearsDisplay = race.phases.map(phase => {
-                    return teamClears.find(clear => clear.phase === phase)?.date.toDate();
+                    const clear = teamClears.find(clear => clear.phase === phase);
+                    if(clear){
+                      return {
+                        date: clear.date.toDate(),
+                        clear
+                      };
+                    }
+                    return undefined;
                   });
                 }
                 return {
                   ...team,
-                  clears: clearsDisplay
+                  clears: clearsDisplay,
                 }
               })
               .sort((a, b) => {
@@ -159,7 +175,7 @@ export class LeaderboardComponent {
                   return -1;
                 }
                 if (lastAClear === lastBClear) {
-                  return aClears[lastAClear]?.getTime()! - bClears[lastBClear]?.getTime()!;
+                  return aClears[lastAClear]?.date?.getTime()! - bClears[lastBClear]?.date?.getTime()!;
                 }
                 return lastAClear - lastBClear;
               })
@@ -189,6 +205,22 @@ export class LeaderboardComponent {
 
   withdrawTeam(race: Race, team: Team): void {
     this.#raceService.updateOne(race.$key, {teams: arrayRemove(team.$key)});
+  }
+
+  editReport(clear: ClearReport): void {
+    this.#dialog.create({
+      nzContent: ClearReportEditDialogComponent,
+      nzData: {
+        race: this.race(),
+        report: clear
+      },
+      nzTitle: 'Report clear/progress',
+      nzFooter: null
+    });
+  }
+
+  deleteReport(clear: ClearReport): void {
+    this.#reportsService.deleteOne(clear.$key!).subscribe();
   }
 
 }
