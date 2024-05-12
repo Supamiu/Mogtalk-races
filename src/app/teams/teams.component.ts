@@ -66,7 +66,7 @@ export class TeamsComponent {
 
   teams$ = combineLatest([this.query$, this.allTeams$]).pipe(
     map(([query, teams]) => {
-      return teams.filter(team => team.name.includes(query));
+      return teams.filter(team => team.name.toLowerCase().includes(query.toLowerCase()));
     })
   );
   // Members management
