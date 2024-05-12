@@ -1,1 +1,23 @@
-TODO current race leaderboard (what if there's two races running?) + twitch embed
+<div nz-flex [nzVertical]="true">
+  <div nz-flex nzGap="middle">
+    <iframe
+      src="https://embed.twitch.tv?channel=mogtalk&height=200&layout=video&muted=true&parent=localhost&parent=mogtalk-race.web.app&parent=mogtalk.org&referrer=https%3A%2F%2Fmogtalk.org%2F&width=500"
+      height="280"
+      width="500"
+      allowfullscreen>
+    </iframe>
+
+    <div>
+      TODO Social links and probably more?
+    </div>
+  </div>
+
+  @if(runningRace$ | async; as race) {
+    <nz-divider nzOrientation="left" nzText="Current race: {{race.name}}"></nz-divider>
+    <h3></h3>
+    <app-leaderboard [race]="race"></app-leaderboard>
+  } @else {
+    <nz-divider nzOrientation="left" nzText="Current race"></nz-divider>
+    <nz-empty nzNotFoundContent="No race running"></nz-empty>
+  }
+</div>
