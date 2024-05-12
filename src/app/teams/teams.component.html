@@ -9,7 +9,7 @@
   </nz-page-header-content>
 </nz-page-header>
 
-<nz-row [nzGutter]="16">
+<nz-row [nzGutter]="[16, 16]">
   @for (team of teams$ | async; track team.$key) {
     <nz-col [nzLg]="6">
       <nz-card [nzTitle]="team.name" [nzExtra]="deleteTeamTpl" nzSize="small">
