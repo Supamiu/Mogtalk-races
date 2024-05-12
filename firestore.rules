@@ -13,10 +13,12 @@ service cloud.firestore {
 
     match /races/{race} {
       allow read;
-      allow write: if getUser(request.auth.uid).admin;
+      allow create, delete: if getUser(request.auth.uid).admin;
+      allow update: if userIsAdminOrTracker(request.auth.uid);
     }
     match /teams/{team} {
-      allow read, write;
+      allow read;
+      allow write: if userIsAdminOrTracker(request.auth.uid);
     }
     match /users/{user} {
     	allow read, create;
