@@ -4,7 +4,7 @@ import {ActivatedRoute} from "@angular/router";
 import {combineLatest, filter, map, shareReplay, switchMap, timer} from "rxjs";
 import {AuthService} from "../auth/auth.service";
 import {Race} from "../model/race";
-import {arrayUnion} from "@angular/fire/firestore";
+import {arrayUnion, Timestamp} from "@angular/fire/firestore";
 import {Team} from "../model/team";
 import {NzModalService} from "ng-zorro-antd/modal";
 import {TeamPickerComponent} from "./team-picker/team-picker.component";
@@ -56,6 +56,9 @@ export class RaceComponent {
 
   status$ = combineLatest([this.race$, timer(0, 1000)]).pipe(
     map(([race]) => {
+      if (race.stopped) {
+        return "Stopped"
+      }
       return race.start.toMillis() > Date.now() ? 'Planned' : 'Running';
     })
   );
@@ -67,7 +70,7 @@ export class RaceComponent {
   userIsTracker$ = this.#authService.userIsTracker$;
 
   stopRace(race: Race): void {
-    this.#raceService.updateOne(race.$key, {stopped: true});
+    this.#raceService.updateOne(race.$key, {stopped: Timestamp.now()});
   }
 
   registerTeam(race: Race): void {

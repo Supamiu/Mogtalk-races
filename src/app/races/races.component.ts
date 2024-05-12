@@ -20,6 +20,7 @@ import {map} from "rxjs";
 import {NzPageHeaderComponent, NzPageHeaderExtraDirective} from "ng-zorro-antd/page-header";
 import {NzModalService} from "ng-zorro-antd/modal";
 import {RaceCreationPopupComponent} from "./race-creation-popup/race-creation-popup.component";
+import {Race} from "../model/race";
 
 @Component({
   selector: 'app-races',
@@ -36,7 +37,25 @@ export class RacesComponent {
 
   #dialog = inject(NzModalService);
 
-  public races$ = this.#raceService.query();
+  public races$ = this.#raceService.query().pipe(
+    map(races => {
+      return races.map(race => {
+        return {
+          ...race,
+          status: this.getRaceStatus(race)
+        }
+      }).sort((a, b) => {
+        if (a.stopped) {
+          return 1;
+        }
+        if (b.stopped) {
+          return -1;
+        }
+        return a.start.toMillis() - b.start.toMillis();
+      })
+    })
+  );
+
   public isAdmin$ = this.#auth.user$.pipe(
     map(user => user.admin)
   );
@@ -47,5 +66,15 @@ export class RacesComponent {
       nzContent: RaceCreationPopupComponent,
       nzFooter: null
     });
+  }
+
+  getRaceStatus(race: Race): 'ongoing' | 'planned' | 'ended' {
+    if (race.stopped) {
+      return 'ended';
+    }
+    if (race.start.toMillis() > Date.now()) {
+      return 'planned';
+    }
+    return 'ongoing';
   }
 }

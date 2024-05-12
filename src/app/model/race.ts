@@ -9,7 +9,7 @@ export interface Race extends DataModel {
   start: Timestamp;
   banner: string;
   teams: string[];
-  stopped?: boolean;
+  stopped?: Timestamp;
 }
 
 /**

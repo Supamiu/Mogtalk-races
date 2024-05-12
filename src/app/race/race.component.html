@@ -4,10 +4,14 @@
       <nz-page-header-tags>
         @switch (status$ | async) {
           @case ("Running") {
-            <nz-tag class="running-tag">Running since {{ race.start.toMillis() | date:'medium' }}</nz-tag>
+            <nz-tag [style.border-color]="'aqua'">Running since {{race.start.toDate() | date:'medium'}}</nz-tag>
           }
           @case ("Planned") {
-            <nz-tag class="planned-tag">Starting on {{ race.start.toMillis() | date:'medium' }}</nz-tag>
+            <nz-tag [style.border-color]="'yellow'">Starting {{race.start.toDate() | date:'medium'}}</nz-tag>
+          }
+          @case ('Stopped') {
+            <nz-tag [style.border-color]="'aqua'">Started {{race.start.toDate() | date:'medium'}}</nz-tag>
+            <nz-tag [style.border-color]="'red'">Ended {{race.stopped?.toDate() | date:'medium'}}</nz-tag>
           }
         }
       </nz-page-header-tags>

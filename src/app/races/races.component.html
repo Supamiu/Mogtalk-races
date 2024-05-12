@@ -20,7 +20,17 @@
 
       <p *ngIf="race.phases.length > 0">{{race.phases.length}} Phases</p>
 
-      <nz-tag>Started: {{race.start.toDate() | date:'medium'}}</nz-tag>
+      @switch(race.status){
+        @case ('ongoing') {
+          <nz-tag [style.border-color]="'aqua'">Running since {{race.start.toDate() | date:'medium'}}</nz-tag>
+        }
+        @case ('planned') {
+          <nz-tag [style.border-color]="'yellow'">Starting {{race.start.toDate() | date:'medium'}}</nz-tag>
+        }
+        @case ('ended') {
+          <nz-tag [style.border-color]="'red'">Ended</nz-tag>
+        }
+      }
     </nz-card>
   </nz-col>
 </nz-row>
