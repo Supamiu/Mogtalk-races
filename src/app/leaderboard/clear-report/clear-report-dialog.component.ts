@@ -3,7 +3,15 @@ import {NzFormControlComponent, NzFormDirective, NzFormItemComponent, NzFormLabe
 import {NzColDirective} from "ng-zorro-antd/grid";
 import {NzInputDirective} from "ng-zorro-antd/input";
 import {NzOptionComponent, NzSelectComponent} from "ng-zorro-antd/select";
-import {FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
+import {
+  AbstractControl,
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  ValidationErrors,
+  ValidatorFn,
+  Validators
+} from "@angular/forms";
 import {NZ_MODAL_DATA, NzModalRef} from "ng-zorro-antd/modal";
 import {Team} from "../../model/team";
 import {Race} from "../../model/race";
@@ -63,11 +71,21 @@ export class ClearReportDialogComponent {
     date: new FormControl(new Date(), Validators.required),
     phase: new FormControl('', this.data.race.phases.length > 0 ? Validators.required : []),
     screenshot: new FormControl(''),
+    url: new FormControl('', this.urlRequired()),
   });
 
   screenshot: File | null = null;
 
   userIsTracker$ = this.#auth.userIsTracker$;
+
+  urlRequired(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (control.parent?.get('screenshot')?.value) {
+        return null
+      }
+      return Validators.required(control);
+    }
+  }
 
   fileChange(event: any): void {
     const files = event.target.files;
@@ -78,6 +96,9 @@ export class ClearReportDialogComponent {
     this.loading = true;
     const raw: any = this.form.getRawValue();
     const reportId = this.#reportsService.generateId();
+    if (!raw.team || !raw.phase || !raw.date) {
+      return;
+    }
     this.userIsTracker$.pipe(
       switchMap(userIsTracker => {
         const screenshot$ = new Observable<string>(observer => {
@@ -98,7 +119,6 @@ export class ClearReportDialogComponent {
           .pipe(
             withLatestFrom(this.#auth.user$.pipe(startWith(null))),
             switchMap(([url, user]) => {
-              console.log(url, user);
               const report = {
                 date: Timestamp.fromDate(raw.date),
                 team: raw.team.$key,

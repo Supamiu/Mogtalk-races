@@ -27,12 +27,23 @@
       <nz-date-picker formControlName="date" nzShowTime></nz-date-picker>
     </nz-form-control>
   </nz-form-item>
-  <nz-form-item>
-    <nz-form-label nzFor="screenshot" [nzRequired]="(userIsTracker$ | async) === false">Screenshot</nz-form-label>
-    <nz-form-control>
-      <input type="file" name="screenshot" accept="image/*" nz-input (change)="fileChange($event)"/>
-    </nz-form-control>
-  </nz-form-item>
+  <br>
+  <fieldset>
+    <legend>Proof</legend>
+    <nz-form-item>
+      <nz-form-label nzFor="screenshot" [nzRequired]="(userIsTracker$ | async) === false">Screenshot</nz-form-label>
+      <nz-form-control>
+        <input type="file" name="screenshot" accept="image/*" nz-input (change)="fileChange($event)"/>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-divider nzText="Or" nzOrientation="left"></nz-divider>
+    <nz-form-item>
+      <nz-form-label nzFor="url" [nzRequired]="!screenshot && (userIsTracker$ | async) === false">Url</nz-form-label>
+      <nz-form-control nzExtra="Url to a fflogs report, vod, twitter, imgur, etc">
+        <input type="url" nz-input formControlName="url">
+      </nz-form-control>
+    </nz-form-item>
+  </fieldset>
   <nz-divider></nz-divider>
-  <button type="submit" nz-button nzType="primary" nzBlock [disabled]="form.invalid || (!screenshot && (userIsTracker$ | async) === false)  || loading" [nzLoading]="loading">Submit</button>
+  <button type="submit" nz-button nzType="primary" nzBlock [disabled]="(userIsTracker$ | async) === false && (form.invalid || !screenshot  || loading)" [nzLoading]="loading">Submit</button>
 </form>

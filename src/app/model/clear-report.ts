@@ -6,7 +6,8 @@ export interface ClearReport extends DataModel {
   teamName: string;
   phase?: string;
   date: Timestamp;
-  screenshot: string;
+  screenshot?: string;
+  url?: string;
   race: string;
   raceName: string;
   accepted: boolean;
