@@ -44,7 +44,7 @@
               <td>{{ team.region }}</td>
               @if (race.phases.length > 0) {
                 @for (phase of race.phases; track phase; let i = $index) {
-                  <td>
+                  <td nz-tooltip nzTooltipTitle="GMT: {{team.clears[i]?.date | date:'medium':'GMT'}}">
                     {{ team.clears[i]?.date | date:'short' || '' }}
                     @if (team.clears[i] && userIsTracker$ | async) {
                       <button nz-button nzSize="small" (click)="editReport(team.clears[i]?.clear!)"><span nz-icon nzType="edit" nzTheme="outline"></span></button>
@@ -54,7 +54,7 @@
                   </td>
                 }
               } @else {
-                <td>
+                <td nz-tooltip nzTooltipTitle="GMT: {{team.clears[0]?.date | date:'medium':'GMT'}}">
                   {{ team.clears[0]?.date | date:'short' || '' }}
                   @if (team.clears[0] && userIsTracker$ | async) {
                     <button nz-button nzSize="small" (click)="editReport(team.clears[0]?.clear!)"><span nz-icon nzType="edit" nzTheme="outline"></span></button>

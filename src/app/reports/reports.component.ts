@@ -15,6 +15,7 @@ import {HistoryService} from "../database/history.service";
 import {AuthService} from "../auth/auth.service";
 import {Timestamp} from "@angular/fire/firestore";
 import {HistoryEntryType} from "../model/history-entry";
+import {NzTooltipDirective} from "ng-zorro-antd/tooltip";
 
 @Component({
   selector: 'app-reports',
@@ -33,6 +34,7 @@ import {HistoryEntryType} from "../model/history-entry";
     NzSpaceComponent,
     NzSpaceItemDirective,
     NzPopconfirmDirective,
+    NzTooltipDirective,
   ],
   templateUrl: './reports.component.html',
   styleUrl: './reports.component.less'

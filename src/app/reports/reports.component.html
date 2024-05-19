@@ -22,7 +22,7 @@
               / {{ report.phase }}
             }</td>
             <td>{{ report.teamName }}</td>
-            <td>{{ report.date.toMillis() | date:'medium' }}</td>
+            <td nz-tooltip nzTooltipTitle="GMT: {{report.date.toMillis() | date:'medium':'GMT'}}">{{ report.date.toMillis() | date:'medium' }}</td>
             <td><a href="{{report.screenshot || report.url}}" target="_blank">Open proof</a></td>
             <td>
               <nz-space>

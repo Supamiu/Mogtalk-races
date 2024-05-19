@@ -22,6 +22,7 @@ import {ClearReportsService} from "../database/clear-reports.service";
 import {NzDividerComponent} from "ng-zorro-antd/divider";
 import {ClearReport} from "../model/clear-report";
 import {ClearReportEditDialogComponent} from "./clear-report-edit/clear-report-edit-dialog.component";
+import {NzTooltipDirective} from "ng-zorro-antd/tooltip";
 
 @Component({
   selector: 'app-leaderboard',
@@ -36,7 +37,8 @@ import {ClearReportEditDialogComponent} from "./clear-report-edit/clear-report-e
     NzPopconfirmDirective,
     NzIconDirective,
     DatePipe,
-    NzDividerComponent
+    NzDividerComponent,
+    NzTooltipDirective
   ],
   templateUrl: './leaderboard.component.html',
   styleUrl: './leaderboard.component.less'
