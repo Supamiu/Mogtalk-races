@@ -120,7 +120,7 @@ export class LeaderboardComponent {
         }]),
         {
           name: "Stream",
-          comparator: (a: Team, b: Team) => a.twitchLink?.localeCompare(b.twitchLink || '') || 0,
+          comparator: (a: Team, b: Team) => a.streams?.[0]?.localeCompare(b.streams?.[0] || '') || 0,
           priority: Infinity
         },
       ];

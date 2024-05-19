@@ -64,8 +64,8 @@
                 </td>
               }
               <td>
-                @if (team.twitchLink) {
-                  <a [href]="team.twitchLink" target="_blank">{{ team.twitchLink }}</a>
+                @if (team.streams && team.streams[0]) {
+                  <a [href]="team.streams[0]" target="_blank">{{ team.streams[0] }}</a>
                 } @else {
                   No
                 }

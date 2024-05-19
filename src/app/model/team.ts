@@ -5,7 +5,7 @@ export interface Team extends DataModel {
   previousNames: string[];
   datacenter: string;
   region: string;
-  twitchLink?: string;
+  streams: string[];
 
   // Maybe add these later on if we want ot have members inside the teams
   // members: number[];

@@ -24,10 +24,10 @@
         </nz-statistic>
         <nz-statistic nzTitle="Region" [nzValue]="team.region">
         </nz-statistic>
-        @if (team.twitchLink) {
-          <nz-statistic nzTitle="Twitch" [nzValueTemplate]="twitchLinkTpl">
-            <ng-template #twitchLinkTpl>
-              <a [href]="team.twitchLink" target="_blank">{{ team.twitchLink }}</a>
+        @for (link of team.streams; track link) {
+          <nz-statistic nzTitle="Live" [nzValueTemplate]="linkTpl">
+            <ng-template #linkTpl>
+              <a [href]="link" target="_blank">{{ link }}</a>
             </ng-template>
           </nz-statistic>
         }

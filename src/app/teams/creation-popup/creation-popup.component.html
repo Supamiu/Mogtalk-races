@@ -17,14 +17,20 @@
       </nz-select>
     </nz-form-control>
   </nz-form-item>
-  <nz-form-item>
-    <nz-form-control nzErrorTip="Twitch link is invalid, must follow pattern https://twitch.tv/something">
-      <nz-form-label>Twitch link</nz-form-label>
-      <nz-input-group>
-        <input type="url" nz-input formControlName="twitchLink" placeholder="https://twitch.tv/awesome_prog_team"/>
-      </nz-input-group>
-    </nz-form-control>
-  </nz-form-item>
+  <nz-divider nzOrientation="left" nzText="Livestreams"></nz-divider>
+  @for (link of newTeamForm.value.streams; track link; let i = $index; let first = $first) {
+    <nz-form-item>
+      <nz-form-control nzErrorTip="Link is invalid, must follow pattern https://......">
+        <nz-input-group nzSearch [nzAddOnAfter]="first ? undefined : removeLinkTpl">
+          <input type="url" nz-input [formControl]="newTeamForm.controls.streams.at(i)" placeholder="https://twitch.tv/awesome_prog_team"/>
+          <ng-template #removeLinkTpl>
+            <button nz-button nzDanger (click)="removeLink(i)"><span nz-icon nzType="delete" nzTheme="outline"></span></button>
+          </ng-template>
+        </nz-input-group>
+      </nz-form-control>
+    </nz-form-item>
+  }
+  <button nz-button nzBlock (click)="addLink()" type="button">+ Add link</button>
   <!--  <nz-divider nzOrientation="left" nzText="Members"></nz-divider>-->
   <!--  <nz-list nzSize="small" class="members-list">-->
   <!--    @for (member of newTeamForm.value.members; track member; let index = $index; let last = $last) {-->

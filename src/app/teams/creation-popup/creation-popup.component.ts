@@ -8,9 +8,7 @@ import {NzFormControlComponent, NzFormDirective, NzFormItemComponent, NzFormLabe
 import {NzIconDirective} from "ng-zorro-antd/icon";
 import {NzInputDirective, NzInputGroupComponent} from "ng-zorro-antd/input";
 import {FormArray, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
-import {filter, switchMap, take} from "rxjs";
 import {NzMessageService} from "ng-zorro-antd/message";
-import {AuthService} from "../../auth/auth.service";
 import {TeamsService} from "../../database/teams.service";
 import {NzModalRef} from "ng-zorro-antd/modal";
 import {NzListComponent, NzListItemComponent, NzListItemMetaComponent} from "ng-zorro-antd/list";
@@ -66,7 +64,9 @@ export class CreationPopupComponent {
   newTeamForm = new FormGroup({
     name: new FormControl('', Validators.required),
     datacenter: new FormControl('', Validators.required),
-    twitchLink: new FormControl('', Validators.pattern(/https:\/\/(www\.)?twitch\.tv\/.+/i))
+    streams: new FormArray([
+      new FormControl('', Validators.pattern(/https:\/\/.+/i))
+    ])
     // members: new FormArray([
     //   new FormControl<number>(0, [Validators.required, Validators.minLength(7), Validators.maxLength(8)])
     // ], Validators.required),
@@ -84,12 +84,21 @@ export class CreationPopupComponent {
     const team: Team = this.newTeamForm.getRawValue() as any;
     this.#teamsService.addOne({
       ...team,
+      streams: team.streams.filter(Boolean),
       region: REGION_PER_DC[team.datacenter]
     } as any).subscribe(() => {
       this.#notification.success('Team has been created !');
       this.newTeamForm.reset();
       this.#ref.close();
     });
+  }
+
+  addLink(): void {
+    this.newTeamForm.controls.streams.push(new FormControl('', Validators.pattern(/https:\/\/.+/i)));
+  }
+
+  removeLink(index: number): void {
+    this.newTeamForm.controls.streams.removeAt(index);
   }
 
   // removeMemberFromForm(index: number): void {
