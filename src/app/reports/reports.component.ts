@@ -13,12 +13,16 @@ import {NzSpaceComponent, NzSpaceItemDirective} from "ng-zorro-antd/space";
 import {NzPopconfirmDirective} from "ng-zorro-antd/popconfirm";
 import {HistoryService} from "../database/history.service";
 import {AuthService} from "../auth/auth.service";
-import {Timestamp} from "@angular/fire/firestore";
+import {arrayUnion, Timestamp} from "@angular/fire/firestore";
 import {HistoryEntryType} from "../model/history-entry";
 import {NzTooltipDirective} from "ng-zorro-antd/tooltip";
 import {NzOptionComponent, NzSelectComponent} from "ng-zorro-antd/select";
 import {ReportPhasesPipe} from "./report-phases.pipe";
 import {FormsModule} from "@angular/forms";
+import {NzTagComponent} from "ng-zorro-antd/tag";
+import {TeamsService} from "../database/teams.service";
+import {REGION_PER_DC} from "../core/game-data";
+import {RaceService} from "../database/race.service";
 
 @Component({
   selector: 'app-reports',
@@ -42,6 +46,7 @@ import {FormsModule} from "@angular/forms";
     ReportPhasesPipe,
     NzOptionComponent,
     FormsModule,
+    NzTagComponent,
   ],
   templateUrl: './reports.component.html',
   styleUrl: './reports.component.less'
@@ -53,6 +58,10 @@ export class ReportsComponent {
   #reportsService = inject(ClearReportsService);
 
   #historyService = inject(HistoryService);
+
+  #teamsService = inject(TeamsService);
+
+  #raceService = inject(RaceService);
 
   reports$ = this.#reportsService.pending$.pipe(
     shareReplay(1)
@@ -107,17 +116,46 @@ export class ReportsComponent {
     this.user$.pipe(
       first(),
       switchMap(user => {
-        return this.#historyService.addOne({
+        const historyAddition$ = this.#historyService.addOne({
           date: Timestamp.now(),
           type: HistoryEntryType.REPORT_ACCEPTED,
           author: user.$key || 'unknown',
           report
-        })
-      }),
-      switchMap(() => {
-        return this.#reportsService.updateOne(report.$key, {
-          accepted: true
         });
+        if (report.customTeam) {
+          return this.#teamsService.addOne({
+            name: report.customTeam.name,
+            datacenter: report.customTeam.datacenter,
+            region: REGION_PER_DC[report.customTeam.datacenter],
+            streams: [],
+            previousNames: []
+          }).pipe(
+            switchMap((teamKey) => {
+              report.team = teamKey;
+              return this.#raceService.updateOne(report.race, {
+                teams: arrayUnion(teamKey)
+              }).pipe(
+                switchMap(() => historyAddition$),
+                map(() => {
+                  return {
+                    accepted: true,
+                    team: teamKey
+                  }
+                })
+              )
+            })
+          );
+        }
+        return historyAddition$.pipe(
+          map(() => {
+            return {
+              accepted: true
+            }
+          })
+        );
+      }),
+      switchMap((update) => {
+        return this.#reportsService.updateOne(report.$key, update);
       })
     ).subscribe()
   }

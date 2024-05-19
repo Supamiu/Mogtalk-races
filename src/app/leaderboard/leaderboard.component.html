@@ -44,23 +44,27 @@
               <td>{{ team.region }}</td>
               @if (race.phases.length > 0) {
                 @for (phase of race.phases; track phase; let i = $index) {
-                  <td nz-tooltip nzTooltipTitle="GMT: {{team.clears[i]?.date | date:'medium':'GMT'}}">
-                    {{ team.clears[i]?.date | date:'short' || '' }}
-                    @if (team.clears[i] && userIsTracker$ | async) {
-                      <button nz-button nzSize="small" (click)="editReport(team.clears[i]?.clear!)"><span nz-icon nzType="edit" nzTheme="outline"></span></button>
-                      <nz-divider nzType="vertical"></nz-divider>
-                      <button nz-button nzSize="small" (nzOnConfirm)="deleteReport(team.clears[i]?.clear!)" nzDanger nz-popconfirm nzPopconfirmTitle="Are you sure?"><span nz-icon nzType="delete" nzTheme="outline"></span></button>
-                    }
+                  <td>
+                    <span nz-tooltip nzTooltipTitle="GMT: {{team.clears[0]?.date | date:'medium':'GMT'}}">
+                      {{ team.clears[i]?.date | date:'short' || '' }}
+                      @if (team.clears[i] && userIsTracker$ | async) {
+                        <button nz-button nzSize="small" (click)="editReport(team.clears[i]?.clear!)"><span nz-icon nzType="edit" nzTheme="outline"></span></button>
+                        <nz-divider nzType="vertical"></nz-divider>
+                        <button nz-button nzSize="small" (nzOnConfirm)="deleteReport(team.clears[i]?.clear!)" nzDanger nz-popconfirm nzPopconfirmTitle="Are you sure?"><span nz-icon nzType="delete" nzTheme="outline"></span></button>
+                      }
+                    </span>
                   </td>
                 }
               } @else {
-                <td nz-tooltip nzTooltipTitle="GMT: {{team.clears[0]?.date | date:'medium':'GMT'}}">
+                <td>
+                  <span nz-tooltip nzTooltipTitle="GMT: {{team.clears[0]?.date | date:'medium':'GMT'}}">
                   {{ team.clears[0]?.date | date:'short' || '' }}
-                  @if (team.clears[0] && userIsTracker$ | async) {
-                    <button nz-button nzSize="small" (click)="editReport(team.clears[0]?.clear!)"><span nz-icon nzType="edit" nzTheme="outline"></span></button>
-                    <nz-divider nzType="vertical"></nz-divider>
-                    <button nz-button nzSize="small" (nzOnConfirm)="deleteReport(team.clears[0]?.clear!)" nzDanger nz-popconfirm nzPopconfirmTitle="Are you sure?"><span nz-icon nzType="delete" nzTheme="outline"></span></button>
-                  }
+                    @if (team.clears[0] && userIsTracker$ | async) {
+                      <button nz-button nzSize="small" (click)="editReport(team.clears[0]?.clear!)"><span nz-icon nzType="edit" nzTheme="outline"></span></button>
+                      <nz-divider nzType="vertical"></nz-divider>
+                      <button nz-button nzSize="small" (nzOnConfirm)="deleteReport(team.clears[0]?.clear!)" nzDanger nz-popconfirm nzPopconfirmTitle="Are you sure?"><span nz-icon nzType="delete" nzTheme="outline"></span></button>
+                    }
+                  </span>
                 </td>
               }
               <td>

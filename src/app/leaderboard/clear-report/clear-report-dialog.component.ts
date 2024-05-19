@@ -1,17 +1,9 @@
 import {Component, inject} from '@angular/core';
 import {NzFormControlComponent, NzFormDirective, NzFormItemComponent, NzFormLabelComponent} from "ng-zorro-antd/form";
-import {NzColDirective} from "ng-zorro-antd/grid";
-import {NzInputDirective} from "ng-zorro-antd/input";
+import {NzColDirective, NzRowDirective} from "ng-zorro-antd/grid";
+import {NzInputDirective, NzInputGroupComponent} from "ng-zorro-antd/input";
 import {NzOptionComponent, NzSelectComponent} from "ng-zorro-antd/select";
-import {
-  AbstractControl,
-  FormControl,
-  FormGroup,
-  ReactiveFormsModule,
-  ValidationErrors,
-  ValidatorFn,
-  Validators
-} from "@angular/forms";
+import {FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
 import {NZ_MODAL_DATA, NzModalRef} from "ng-zorro-antd/modal";
 import {Team} from "../../model/team";
 import {Race} from "../../model/race";
@@ -26,7 +18,11 @@ import {NzMessageService} from "ng-zorro-antd/message";
 import {AuthService} from "../../auth/auth.service";
 import {HistoryService} from "../../database/history.service";
 import {HistoryEntryType} from "../../model/history-entry";
-import {AsyncPipe} from "@angular/common";
+import {AsyncPipe, JsonPipe} from "@angular/common";
+import {NzCheckboxComponent} from "ng-zorro-antd/checkbox";
+import {DATACENTERS} from "../../core/game-data";
+import {NzCardComponent} from "ng-zorro-antd/card";
+import {ClearReport} from "../../model/clear-report";
 
 @Component({
   selector: 'app-clear-report-dialog',
@@ -44,7 +40,13 @@ import {AsyncPipe} from "@angular/common";
     NzDatePickerComponent,
     NzButtonComponent,
     NzDividerComponent,
-    AsyncPipe
+    AsyncPipe,
+    NzCheckboxComponent,
+    FormsModule,
+    NzInputGroupComponent,
+    NzRowDirective,
+    NzCardComponent,
+    JsonPipe
   ],
   templateUrl: './clear-report-dialog.component.html',
   styleUrl: './clear-report-dialog.component.less'
@@ -62,30 +64,27 @@ export class ClearReportDialogComponent {
 
   #message = inject(NzMessageService);
 
+  readonly datacenters = DATACENTERS;
+
   data: { teams: Team[], race: Race } = inject(NZ_MODAL_DATA);
+
+  customTeamForm = false;
 
   loading = false;
 
   form = new FormGroup({
-    team: new FormControl<Team | null>(null, Validators.required),
+    team: new FormControl<Team | null>(null),
     date: new FormControl(new Date(), Validators.required),
     phase: new FormControl('', this.data.race.phases.length > 0 ? Validators.required : []),
     screenshot: new FormControl(''),
-    url: new FormControl('', this.urlRequired()),
+    url: new FormControl(''),
+    customTeamName: new FormControl(''),
+    customTeamDatacenter: new FormControl(''),
   });
 
   screenshot: File | null = null;
 
   userIsTracker$ = this.#auth.userIsTracker$;
-
-  urlRequired(): ValidatorFn {
-    return (control: AbstractControl): ValidationErrors | null => {
-      if (control.parent?.get('screenshot')?.value) {
-        return null
-      }
-      return Validators.required(control);
-    }
-  }
 
   fileChange(event: any): void {
     const files = event.target.files;
@@ -96,13 +95,13 @@ export class ClearReportDialogComponent {
     this.loading = true;
     const raw: any = this.form.getRawValue();
     const reportId = this.#reportsService.generateId();
-    if (!raw.team || !raw.phase || !raw.date) {
+    if ((!raw.team && !raw.customTeamName && !raw.customTeamDatacenter) || !raw.phase || !raw.date) {
       return;
     }
     this.userIsTracker$.pipe(
       switchMap(userIsTracker => {
         const screenshot$ = new Observable<string>(observer => {
-          const fileRef = ref(this.#afs, `clear-reports/${this.data.race.name}/${raw.team.name}/${reportId}.png`);
+          const fileRef = ref(this.#afs, `clear-reports/${this.data.race.name}/${raw.team?.name || raw.customTeamName}/${reportId}.png`);
           this.screenshot?.arrayBuffer().then(buffer => {
             uploadBytes(fileRef, buffer, {contentType: this.screenshot?.type}).then(snap => {
               getDownloadURL(snap.ref).then(url => {
@@ -119,17 +118,25 @@ export class ClearReportDialogComponent {
           .pipe(
             withLatestFrom(this.#auth.user$.pipe(startWith(null))),
             switchMap(([url, user]) => {
-              const report = {
+              const report: Partial<ClearReport> = {
                 date: Timestamp.fromDate(raw.date),
-                team: raw.team.$key,
-                teamName: raw.team.name,
                 phase: raw.phase || null,
                 screenshot: url || '',
                 race: this.data.race.$key || '',
                 raceName: this.data.race?.name,
                 accepted: userIsTracker
               }
-              return this.#reportsService.setOne(reportId, report).pipe(
+              if (this.customTeamForm) {
+                report.teamName = raw.customTeamName;
+                report.customTeam = {
+                  name: raw.customTeamName,
+                  datacenter: raw.customTeamDatacenter,
+                }
+              } else {
+                report.team = raw.team.$key;
+                report.teamName = raw.team.name;
+              }
+              return this.#reportsService.setOne(reportId, report as ClearReport).pipe(
                 switchMap(() => {
                   return this.#historyService.addOne({
                     author: user?.$key || 'anonymous',
@@ -137,7 +144,7 @@ export class ClearReportDialogComponent {
                     type: userIsTracker ? HistoryEntryType.REPORT_ACCEPTED : HistoryEntryType.REPORT_SUBMITTED,
                     report: {
                       $key: reportId,
-                      ...report
+                      ...report as ClearReport
                     }
                   })
                 })

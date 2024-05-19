@@ -2,7 +2,7 @@ import {DataModel} from "../core/data-model";
 import {Timestamp} from "@angular/fire/firestore";
 
 export interface ClearReport extends DataModel {
-  team: string;
+  team?: string;
   teamName: string;
   phase?: string;
   date: Timestamp;
@@ -11,4 +11,8 @@ export interface ClearReport extends DataModel {
   race: string;
   raceName: string;
   accepted: boolean;
+  customTeam?: {
+    name: string;
+    datacenter: string;
+  }
 }

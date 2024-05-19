@@ -1,14 +1,40 @@
 <form nz-form [formGroup]="form" (ngSubmit)="submit()">
   <nz-form-item>
     <nz-form-label nzFor="team" nzRequired>Team</nz-form-label>
-    <nz-form-control>
-      <nz-select formControlName="team" nzShowSearch>
+    <nz-form-control [nzExtra]="(userIsTracker$ | async) ? undefined : anonymousTeamTpl">
+      <nz-select formControlName="team" nzShowSearch [nzDisabled]="customTeamForm">
         @for (team of data.teams; track team.$key) {
           <nz-option [nzLabel]="team.name" [nzValue]="team"></nz-option>
         }
       </nz-select>
+      <ng-template #anonymousTeamTpl>
+        <label nz-checkbox [(ngModel)]="customTeamForm" [ngModelOptions]="{standalone: true}" (ngModelChange)="form.controls.team.reset();form.controls.customTeamName.reset();form.controls.customTeamDatacenter.reset()"></label> Team isn't in the list
+      </ng-template>
     </nz-form-control>
   </nz-form-item>
+  @if(customTeamForm) {
+    <nz-card nzSize="small" nzTitle="New team">
+      <nz-form-item>
+        <nz-form-control nzErrorTip="Please input a name">
+          <nz-form-label nzRequired>Name</nz-form-label>
+          <nz-input-group>
+            <input type="text" nz-input formControlName="customTeamName" placeholder="Foo fighters"/>
+          </nz-input-group>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-control nzErrorTip="Please input a Datacenter">
+          <nz-form-label nzRequired>Datacenter</nz-form-label>
+          <nz-select formControlName="customTeamDatacenter">
+            @for (dc of datacenters; track dc) {
+              <nz-option [nzValue]="dc" [nzLabel]="dc"></nz-option>
+            }
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+    </nz-card>
+    <br>
+  }
   @if (data.race.phases.length > 0) {
     <nz-form-item>
       <nz-form-label nzFor="phase" nzRequired>Phase</nz-form-label>
@@ -31,7 +57,7 @@
   <fieldset>
     <legend>Proof</legend>
     <nz-form-item>
-      <nz-form-label nzFor="screenshot" [nzRequired]="(userIsTracker$ | async) === false">Screenshot</nz-form-label>
+      <nz-form-label nzFor="screenshot" [nzRequired]="(userIsTracker$ | async) === false && !form.value.url">Screenshot</nz-form-label>
       <nz-form-control>
         <input type="file" name="screenshot" accept="image/*" nz-input (change)="fileChange($event)"/>
       </nz-form-control>
@@ -45,5 +71,5 @@
     </nz-form-item>
   </fieldset>
   <nz-divider></nz-divider>
-  <button type="submit" nz-button nzType="primary" nzBlock [disabled]="(userIsTracker$ | async) === false && (form.invalid || !screenshot  || loading)" [nzLoading]="loading">Submit</button>
+  <button type="submit" nz-button nzType="primary" nzBlock [disabled]="(userIsTracker$ | async) === false && (form.invalid || (!screenshot && !form.value.url)  || loading)" [nzLoading]="loading">Submit</button>
 </form>
