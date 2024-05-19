@@ -1,0 +1,26 @@
+<nz-page-header nzTitle="History" nzSubtitle="Full record of all leaderboard-related events"></nz-page-header>
+
+@defer (when history$ | async) {
+  @if(history$ | async; as history) {
+    <nz-table #historyTable [nzData]="history" [nzPageSize]="25" nzHideOnSinglePage>
+      <thead>
+      <tr>
+        <th>Date</th>
+        <th>Author</th>
+        <th>Type</th>
+        <th>Report</th>
+      </tr>
+      </thead>
+      <tbody>
+      @for (entry of historyTable.data; track entry.$key) {
+        <tr>
+          <td>{{entry.date.toDate() | date:'medium'}}</td>
+          <td>{{entry.author | characterName | async}}</td>
+          <td>{{HistoryEntryType[entry.type]}}</td>
+          <td>{{entry.report.raceName}} @if(entry.report.phase){[{{entry.report.phase}}]} {{entry.report.teamName}} @if(entry.report.screenshot){<a [href]="entry.report.screenshot">View screenshot</a>} &commat; {{entry.report.date.toDate() | date: 'medium'}}</td>
+        </tr>
+      }
+      </tbody>
+    </nz-table>
+  }
+}

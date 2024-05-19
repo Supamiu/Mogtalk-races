@@ -13,9 +13,11 @@ import {NzDividerComponent} from "ng-zorro-antd/divider";
 import {Timestamp} from "@angular/fire/firestore";
 import {getDownloadURL, ref, Storage, uploadBytes} from "@angular/fire/storage";
 import {ClearReportsService} from "../../database/clear-reports.service";
-import {Observable, switchMap, withLatestFrom} from "rxjs";
+import {Observable, startWith, switchMap, withLatestFrom} from "rxjs";
 import {NzMessageService} from "ng-zorro-antd/message";
 import {AuthService} from "../../auth/auth.service";
+import {HistoryService} from "../../database/history.service";
+import {HistoryEntryType} from "../../model/history-entry";
 
 @Component({
   selector: 'app-clear-report-dialog',
@@ -41,6 +43,8 @@ export class ClearReportDialogComponent {
   #afs = inject(Storage);
 
   #reportsService = inject(ClearReportsService);
+
+  #historyService = inject(HistoryService);
 
   #ref = inject(NzModalRef);
 
@@ -84,9 +88,9 @@ export class ClearReportDialogComponent {
         })
       });
     }).pipe(
-      withLatestFrom(this.#auth.userIsTracker$),
-      switchMap(([url, userIsTracker]) => {
-        return this.#reportsService.setOne(reportId, {
+      withLatestFrom(this.#auth.userIsTracker$, this.#auth.user$.pipe(startWith(null))),
+      switchMap(([url, userIsTracker, user]) => {
+        const report = {
           date: Timestamp.fromDate(raw.date),
           team: raw.team.$key,
           teamName: raw.team.name,
@@ -95,7 +99,20 @@ export class ClearReportDialogComponent {
           race: this.data.race.$key || '',
           raceName: this.data.race?.name,
           accepted: userIsTracker
-        })
+        }
+        return this.#reportsService.setOne(reportId, report).pipe(
+          switchMap(() => {
+            return this.#historyService.addOne({
+              author: user?.$key || 'anonymous',
+              date: Timestamp.now(),
+              type: userIsTracker ? HistoryEntryType.REPORT_ACCEPTED : HistoryEntryType.REPORT_SUBMITTED,
+              report: {
+                $key: reportId,
+                ...report
+              }
+            })
+          })
+        )
       })
     ).subscribe(() => {
       this.#message.success("Clear report submitted, thanks !");

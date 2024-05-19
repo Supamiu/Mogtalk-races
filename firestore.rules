@@ -16,17 +16,24 @@ service cloud.firestore {
       allow create, delete: if getUser(request.auth.uid).admin;
       allow update: if userIsAdminOrTracker(request.auth.uid);
     }
+
     match /teams/{team} {
       allow read;
       allow write: if userIsAdminOrTracker(request.auth.uid);
     }
+
     match /users/{user} {
     	allow read, create;
       allow update: if userIsAdminOrTracker(request.auth.uid);
     }
+
     match /clear-reports/{report} {
       allow read, create;
       allow write: if userIsAdminOrTracker(request.auth.uid);
+    }
+
+    match /history/{entry} {
+      allow create, read;
     }
   }
 }

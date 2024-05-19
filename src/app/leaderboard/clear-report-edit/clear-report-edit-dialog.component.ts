@@ -3,20 +3,20 @@ import {NzFormControlComponent, NzFormDirective, NzFormItemComponent, NzFormLabe
 import {NzColDirective} from "ng-zorro-antd/grid";
 import {NzInputDirective} from "ng-zorro-antd/input";
 import {NzOptionComponent, NzSelectComponent} from "ng-zorro-antd/select";
-import {FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
+import {FormsModule} from "@angular/forms";
 import {NZ_MODAL_DATA, NzModalRef} from "ng-zorro-antd/modal";
-import {Team} from "../../model/team";
 import {Race} from "../../model/race";
 import {NzDatePickerComponent} from "ng-zorro-antd/date-picker";
 import {NzButtonComponent} from "ng-zorro-antd/button";
 import {NzDividerComponent} from "ng-zorro-antd/divider";
 import {Timestamp} from "@angular/fire/firestore";
-import {getDownloadURL, ref, Storage, uploadBytes} from "@angular/fire/storage";
 import {ClearReportsService} from "../../database/clear-reports.service";
-import {Observable, switchMap, withLatestFrom} from "rxjs";
+import {first, switchMap} from "rxjs";
 import {NzMessageService} from "ng-zorro-antd/message";
-import {AuthService} from "../../auth/auth.service";
 import {ClearReport} from "../../model/clear-report";
+import {HistoryService} from "../../database/history.service";
+import {AuthService} from "../../auth/auth.service";
+import {HistoryEntryType, ReportEditEntry} from "../../model/history-entry";
 
 @Component({
   selector: 'app-clear-report-dialog',
@@ -41,9 +41,13 @@ import {ClearReport} from "../../model/clear-report";
 export class ClearReportEditDialogComponent {
   #reportsService = inject(ClearReportsService);
 
+  #historyService = inject(HistoryService);
+
   #ref = inject(NzModalRef);
 
   #message = inject(NzMessageService);
+
+  #authService = inject(AuthService);
 
   data: { report: ClearReport, race: Race } = inject(NZ_MODAL_DATA);
 
@@ -52,7 +56,23 @@ export class ClearReportEditDialogComponent {
   submit(): void {
     this.#reportsService.updateOne(this.data.report.$key, {
       date: Timestamp.fromDate(this.date),
-    }).subscribe(() => {
+    }).pipe(
+      switchMap(() => {
+        return this.#authService.user$.pipe(
+          first(),
+          switchMap((user) => {
+            return this.#historyService.addOne({
+              author: user.$key || 'unknown',
+              date: Timestamp.now(),
+              type: HistoryEntryType.REPORT_EDITED,
+              report: this.data.report,
+              previous_date: this.data.report.date,
+              new_date: Timestamp.fromDate(this.date)
+            } as ReportEditEntry)
+          })
+        )
+      })
+    ).subscribe(() => {
       this.#message.success("Clear report submitted, thanks !");
       this.#ref.close();
     });

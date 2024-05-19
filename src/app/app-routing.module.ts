@@ -18,6 +18,11 @@ const routes: Routes = [
     canActivate: [trackerGuard]
   },
   {
+    path: 'history',
+    loadComponent: () => import('./history/history.component').then(c => c.HistoryComponent),
+    canActivate: [trackerGuard]
+  },
+  {
     path: 'race/:id/:name',
     loadComponent: () => import('./race/race.component').then(c => c.RaceComponent)
   },

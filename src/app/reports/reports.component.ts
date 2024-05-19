@@ -4,13 +4,17 @@ import {NzPageHeaderComponent} from "ng-zorro-antd/page-header";
 import {NzListComponent, NzListItemComponent, NzListItemMetaComponent} from "ng-zorro-antd/list";
 import {AsyncPipe, DatePipe} from "@angular/common";
 import {NzTableModule} from "ng-zorro-antd/table";
-import {map, shareReplay} from "rxjs";
+import {first, map, shareReplay, switchMap} from "rxjs";
 import {ClearReport} from "../model/clear-report";
 import {NzSpinComponent} from "ng-zorro-antd/spin";
 import {NzButtonComponent} from "ng-zorro-antd/button";
 import {NzIconDirective} from "ng-zorro-antd/icon";
 import {NzSpaceComponent, NzSpaceItemDirective} from "ng-zorro-antd/space";
 import {NzPopconfirmDirective} from "ng-zorro-antd/popconfirm";
+import {HistoryService} from "../database/history.service";
+import {AuthService} from "../auth/auth.service";
+import {Timestamp} from "@angular/fire/firestore";
+import {HistoryEntryType} from "../model/history-entry";
 
 @Component({
   selector: 'app-reports',
@@ -35,11 +39,17 @@ import {NzPopconfirmDirective} from "ng-zorro-antd/popconfirm";
 })
 export class ReportsComponent {
 
+  #authService = inject(AuthService);
+
   #reportsService = inject(ClearReportsService);
+
+  #historyService = inject(HistoryService);
 
   reports$ = this.#reportsService.pending$.pipe(
     shareReplay(1)
   );
+
+  user$ = this.#authService.user$;
 
   columns$ = this.reports$.pipe(
     map(reports => {
@@ -80,12 +90,38 @@ export class ReportsComponent {
   );
 
   accept(report: ClearReport) {
-    this.#reportsService.updateOne(report.$key, {
-      accepted: true
-    });
+    this.user$.pipe(
+      first(),
+      switchMap(user => {
+        return this.#historyService.addOne({
+          date: Timestamp.now(),
+          type: HistoryEntryType.REPORT_ACCEPTED,
+          author: user.$key || 'unknown',
+          report
+        })
+      }),
+      switchMap(() => {
+        return this.#reportsService.updateOne(report.$key, {
+          accepted: true
+        });
+      })
+    ).subscribe()
   }
 
   reject(report: ClearReport) {
-    this.#reportsService.deleteOne(report.$key as string).subscribe();
+    this.user$.pipe(
+      first(),
+      switchMap(user => {
+        return this.#historyService.addOne({
+          date: Timestamp.now(),
+          type: HistoryEntryType.REPORT_REJECTED,
+          author: user.$key || 'unknown',
+          report
+        })
+      }),
+      switchMap(() => {
+        return this.#reportsService.deleteOne(report.$key as string)
+      })
+    ).subscribe();
   }
 }

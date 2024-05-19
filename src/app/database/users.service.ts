@@ -19,7 +19,7 @@ export class UsersService extends FirestoreStorage<User> {
         catchError(() => {
           return of({notFound: true});
         }),
-        shareReplay()
+        shareReplay(1)
       );
     }
     return this.charactersCache[lodestoneId];
