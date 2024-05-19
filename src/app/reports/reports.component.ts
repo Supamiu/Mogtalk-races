@@ -16,6 +16,9 @@ import {AuthService} from "../auth/auth.service";
 import {Timestamp} from "@angular/fire/firestore";
 import {HistoryEntryType} from "../model/history-entry";
 import {NzTooltipDirective} from "ng-zorro-antd/tooltip";
+import {NzOptionComponent, NzSelectComponent} from "ng-zorro-antd/select";
+import {ReportPhasesPipe} from "./report-phases.pipe";
+import {FormsModule} from "@angular/forms";
 
 @Component({
   selector: 'app-reports',
@@ -35,6 +38,10 @@ import {NzTooltipDirective} from "ng-zorro-antd/tooltip";
     NzSpaceItemDirective,
     NzPopconfirmDirective,
     NzTooltipDirective,
+    NzSelectComponent,
+    ReportPhasesPipe,
+    NzOptionComponent,
+    FormsModule,
   ],
   templateUrl: './reports.component.html',
   styleUrl: './reports.component.less'
@@ -52,6 +59,8 @@ export class ReportsComponent {
   );
 
   user$ = this.#authService.user$;
+
+  editedPhase?: string;
 
   columns$ = this.reports$.pipe(
     map(reports => {
@@ -128,5 +137,26 @@ export class ReportsComponent {
         return this.#reportsService.deleteOne(report.$key as string)
       })
     ).subscribe();
+  }
+
+  setReportPhase(report: ClearReport) {
+    this.user$.pipe(
+      first(),
+      switchMap(user => {
+        return this.#historyService.addOne({
+          date: Timestamp.now(),
+          type: HistoryEntryType.REPORT_EDITED,
+          author: user.$key || 'unknown',
+          report
+        })
+      }),
+      switchMap(() => {
+        return this.#reportsService.updateOne(report.$key as string, {
+          phase: report.phase
+        })
+      })
+    ).subscribe(() => {
+      delete this.editedPhase;
+    });
   }
 }

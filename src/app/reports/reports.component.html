@@ -19,7 +19,22 @@
         @for (report of reportsTable.data; track report.$key) {
           <tr>
             <td>{{ report.raceName }}</td>
-            <td>{{ report.phase }}</td>
+            <td>
+              @if (editedPhase === report.$key) {
+                @if (report.race | reportPhases | async; as phases){
+                  <nz-select [(ngModel)]="report.phase" nzSize="small">
+                    @for (phase of phases; track phase) {
+                      <nz-option [nzValue]="phase" [nzLabel]="phase"></nz-option>
+                    }
+                  </nz-select>
+                  &nbsp;
+                  <button nz-button nzSize="small" nzType="primary" nz-tooltip nzTooltipTitle="Edit" (click)="setReportPhase(report)"><span nz-icon nzType="check" nzTheme="outline"></span></button>
+                }
+              } @else {
+                {{ report.phase }}
+                <button nz-button nzSize="small" nz-tooltip nzTooltipTitle="Edit" (click)="editedPhase = report.$key"><span nz-icon nzType="edit" nzTheme="outline"></span></button>
+              }
+            </td>
             <td>{{ report.teamName }}</td>
             <td nz-tooltip nzTooltipTitle="GMT: {{report.date.toMillis() | date:'medium':'GMT'}}">{{ report.date.toMillis() | date:'medium' }}</td>
             <td><a href="{{report.screenshot || report.url}}" target="_blank">Open proof</a></td>
