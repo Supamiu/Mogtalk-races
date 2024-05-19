@@ -69,6 +69,9 @@ export class ReportsComponent {
           )
         },
         {
+          name: 'Phase'
+        },
+        {
           name: 'Team',
           filterFn: (value: string[], report: ClearReport) => value.includes(report.teamName),
           possibleValues: [...new Set(reports.map(report => report.teamName))].map(

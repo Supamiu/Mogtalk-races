@@ -18,9 +18,8 @@
       <tbody>
         @for (report of reportsTable.data; track report.$key) {
           <tr>
-            <td>{{ report.raceName }} @if (report.phase) {
-              / {{ report.phase }}
-            }</td>
+            <td>{{ report.raceName }}</td>
+            <td>{{ report.phase }}</td>
             <td>{{ report.teamName }}</td>
             <td nz-tooltip nzTooltipTitle="GMT: {{report.date.toMillis() | date:'medium':'GMT'}}">{{ report.date.toMillis() | date:'medium' }}</td>
             <td><a href="{{report.screenshot || report.url}}" target="_blank">Open proof</a></td>
