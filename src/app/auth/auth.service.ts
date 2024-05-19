@@ -8,7 +8,7 @@ import {
   user
 } from "@angular/fire/auth";
 import {UsersService} from "../database/users.service";
-import {filter, from, map, shareReplay, switchMap} from "rxjs";
+import {filter, from, map, of, shareReplay, switchMap} from "rxjs";
 
 @Injectable({providedIn: 'root'})
 export class AuthService {
@@ -21,8 +21,15 @@ export class AuthService {
     shareReplay(1)
   );
 
-  userIsTracker$ = this.user$.pipe(
-    map(user => user.tracker || user.admin || false)
+  userIsTracker$ = user(this.#afAuth).pipe(
+    switchMap(fUser => {
+      if (fUser === null) {
+        return of(false)
+      }
+      return this.user$.pipe(
+        map(user => user.tracker || user.admin || false)
+      )
+    })
   );
 
   loggedIn$ = authState(this.#afAuth).pipe(

@@ -13,11 +13,12 @@ import {NzDividerComponent} from "ng-zorro-antd/divider";
 import {Timestamp} from "@angular/fire/firestore";
 import {getDownloadURL, ref, Storage, uploadBytes} from "@angular/fire/storage";
 import {ClearReportsService} from "../../database/clear-reports.service";
-import {Observable, startWith, switchMap, withLatestFrom} from "rxjs";
+import {Observable, of, startWith, switchMap, withLatestFrom} from "rxjs";
 import {NzMessageService} from "ng-zorro-antd/message";
 import {AuthService} from "../../auth/auth.service";
 import {HistoryService} from "../../database/history.service";
 import {HistoryEntryType} from "../../model/history-entry";
+import {AsyncPipe} from "@angular/common";
 
 @Component({
   selector: 'app-clear-report-dialog',
@@ -34,7 +35,8 @@ import {HistoryEntryType} from "../../model/history-entry";
     NzOptionComponent,
     NzDatePickerComponent,
     NzButtonComponent,
-    NzDividerComponent
+    NzDividerComponent,
+    AsyncPipe
   ],
   templateUrl: './clear-report-dialog.component.html',
   styleUrl: './clear-report-dialog.component.less'
@@ -65,6 +67,8 @@ export class ClearReportDialogComponent {
 
   screenshot: File | null = null;
 
+  userIsTracker$ = this.#auth.userIsTracker$;
+
   fileChange(event: any): void {
     const files = event.target.files;
     this.screenshot = files.item(0);
@@ -72,47 +76,54 @@ export class ClearReportDialogComponent {
 
   submit(): void {
     this.loading = true;
-    if (!this.screenshot) {
-      return;
-    }
     const raw: any = this.form.getRawValue();
     const reportId = this.#reportsService.generateId();
-    const fileRef = ref(this.#afs, `clear-reports/${this.data.race.name}/${raw.team.name}/${reportId}.png`);
-    new Observable<string>(observer => {
-      this.screenshot?.arrayBuffer().then(buffer => {
-        uploadBytes(fileRef, buffer, {contentType: this.screenshot?.type}).then(snap => {
-          getDownloadURL(snap.ref).then(url => {
-            observer.next(url);
-            observer.complete();
-          })
-        })
-      });
-    }).pipe(
-      withLatestFrom(this.#auth.userIsTracker$, this.#auth.user$.pipe(startWith(null))),
-      switchMap(([url, userIsTracker, user]) => {
-        const report = {
-          date: Timestamp.fromDate(raw.date),
-          team: raw.team.$key,
-          teamName: raw.team.name,
-          phase: raw.phase || null,
-          screenshot: url,
-          race: this.data.race.$key || '',
-          raceName: this.data.race?.name,
-          accepted: userIsTracker
-        }
-        return this.#reportsService.setOne(reportId, report).pipe(
-          switchMap(() => {
-            return this.#historyService.addOne({
-              author: user?.$key || 'anonymous',
-              date: Timestamp.now(),
-              type: userIsTracker ? HistoryEntryType.REPORT_ACCEPTED : HistoryEntryType.REPORT_SUBMITTED,
-              report: {
-                $key: reportId,
-                ...report
-              }
+    this.userIsTracker$.pipe(
+      switchMap(userIsTracker => {
+        const screenshot$ = new Observable<string>(observer => {
+          const fileRef = ref(this.#afs, `clear-reports/${this.data.race.name}/${raw.team.name}/${reportId}.png`);
+          this.screenshot?.arrayBuffer().then(buffer => {
+            uploadBytes(fileRef, buffer, {contentType: this.screenshot?.type}).then(snap => {
+              getDownloadURL(snap.ref).then(url => {
+                observer.next(url);
+                observer.complete();
+              })
             })
-          })
-        )
+          });
+        });
+
+        const source$: Observable<null | string> = (userIsTracker && !this.screenshot) ? of(null) : screenshot$;
+
+        return source$
+          .pipe(
+            withLatestFrom(this.#auth.user$.pipe(startWith(null))),
+            switchMap(([url, user]) => {
+              console.log(url, user);
+              const report = {
+                date: Timestamp.fromDate(raw.date),
+                team: raw.team.$key,
+                teamName: raw.team.name,
+                phase: raw.phase || null,
+                screenshot: url || '',
+                race: this.data.race.$key || '',
+                raceName: this.data.race?.name,
+                accepted: userIsTracker
+              }
+              return this.#reportsService.setOne(reportId, report).pipe(
+                switchMap(() => {
+                  return this.#historyService.addOne({
+                    author: user?.$key || 'anonymous',
+                    date: Timestamp.now(),
+                    type: userIsTracker ? HistoryEntryType.REPORT_ACCEPTED : HistoryEntryType.REPORT_SUBMITTED,
+                    report: {
+                      $key: reportId,
+                      ...report
+                    }
+                  })
+                })
+              )
+            })
+          )
       })
     ).subscribe(() => {
       this.#message.success("Clear report submitted, thanks !");
