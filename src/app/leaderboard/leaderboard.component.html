@@ -4,8 +4,11 @@
       <ng-template #emptyTpl>
         <nz-empty [nzNotFoundContent]="notFoundContent">
           <ng-template #notFoundContent>
-            No teams registered on this race yet <br><br>
-            <button nz-button nzType="primary" (click)="registerTeam.emit()">Register teams</button>
+            No teams registered on this race yet
+            @if(userIsTracker$ | async) {
+              <br><br>
+              <button nz-button nzType="primary" (click)="registerTeam.emit()">Register teams</button>
+            }
           </ng-template>
         </nz-empty>
       </ng-template>
