@@ -14,5 +14,6 @@ export interface ClearReport extends DataModel {
   customTeam?: {
     name: string;
     datacenter: string;
+    streams: string[]
   }
 }

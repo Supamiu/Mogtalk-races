@@ -127,7 +127,7 @@ export class ReportsComponent {
             name: report.customTeam.name,
             datacenter: report.customTeam.datacenter,
             region: REGION_PER_DC[report.customTeam.datacenter],
-            streams: [],
+            streams: report.customTeam.streams,
             previousNames: []
           }).pipe(
             switchMap((teamKey) => {

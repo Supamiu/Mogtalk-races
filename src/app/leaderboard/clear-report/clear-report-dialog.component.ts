@@ -80,6 +80,7 @@ export class ClearReportDialogComponent {
     url: new FormControl(''),
     customTeamName: new FormControl(''),
     customTeamDatacenter: new FormControl(''),
+    customTeamStream: new FormControl(''),
   });
 
   screenshot: File | null = null;
@@ -131,6 +132,7 @@ export class ClearReportDialogComponent {
                 report.customTeam = {
                   name: raw.customTeamName,
                   datacenter: raw.customTeamDatacenter,
+                  streams: raw.customTeamStream ? [raw.customTeamStream] : []
                 }
               } else {
                 report.team = raw.team.$key;

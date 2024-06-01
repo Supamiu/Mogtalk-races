@@ -32,6 +32,14 @@
           </nz-select>
         </nz-form-control>
       </nz-form-item>
+      <nz-form-item>
+        <nz-form-control nzErrorTip="Link is invalid, must follow pattern https://......">
+          <nz-form-label>Livestream</nz-form-label>
+          <nz-input-group>
+            <input type="url" nz-input formControlName="customTeamStream" placeholder="https://twitch.tv/awesome_prog_team"/>
+          </nz-input-group>
+        </nz-form-control>
+      </nz-form-item>
     </nz-card>
     <br>
   }
@@ -65,7 +73,7 @@
     <nz-divider nzText="Or" nzOrientation="left"></nz-divider>
     <nz-form-item>
       <nz-form-label nzFor="url" [nzRequired]="!screenshot && (userIsTracker$ | async) === false">Url</nz-form-label>
-      <nz-form-control nzExtra="Url to a fflogs report, vod, twitter, imgur, etc">
+      <nz-form-control nzExtra="Url to a vod, tweet, imgur, etc">
         <input type="url" nz-input formControlName="url">
       </nz-form-control>
     </nz-form-item>
