@@ -7,7 +7,6 @@ export interface Race extends DataModel {
   type: string;
   phases: string[];
   start: Timestamp;
-  banner: string;
   teams: string[];
   stopped?: Timestamp;
 }
