@@ -5,17 +5,22 @@
         <nz-empty [nzNotFoundContent]="notFoundContent">
           <ng-template #notFoundContent>
             No teams registered on this race yet
-            @if(userIsTracker$ | async) {
+            @if ((userIsTracker$ | async) && !homeDisplay()) {
               <br><br>
               <button nz-button nzType="primary" (click)="registerTeam.emit()">Register teams</button>
             }
           </ng-template>
         </nz-empty>
       </ng-template>
-      @if (teams.length > 0 && (raceIsRunning$ | async)) {
-        <button nz-button nzBlock nzType="primary" class="report-button" (click)="openReportForm(teams)">Report
-          clear/progress
-        </button>
+      @if (!homeDisplay()) {
+        <div nz-flex>
+          <button nz-button nzType="link" class="back-button" routerLink="/races">< BACK</button>
+          @if (teams.length > 0 && (raceIsRunning$ | async)) {
+            <button nz-button nzBlock nzType="primary" class="report-button" (click)="openReportForm(teams)">Report
+              clear/progress
+            </button>
+          }
+        </div>
       }
       <nz-table #teamsTable [nzData]="teams" [nzPageSize]="25" [nzNoResult]="emptyTpl" nzHideOnSinglePage>
         <thead>
@@ -32,7 +37,7 @@
               <th [nzSortFn]="column.comparator" [nzSortPriority]="column.priority">{{ column.name }}</th>
             }
           }
-          @if (!race.stopped && (userIsTracker$ | async)) {
+          @if (!race.stopped && (userIsTracker$ | async) && !homeDisplay()) {
             <th>
             </th>
           }
@@ -50,7 +55,7 @@
                   <td>
                     <span nz-tooltip nzTooltipTitle="GMT: {{team.clears[0]?.date | date:'medium':'GMT'}}">
                       {{ team.clears[i]?.date | date:'short' || '' }}
-                      @if (team.clears[i] && userIsTracker$ | async) {
+                      @if (team.clears[i] && (userIsTracker$ | async) && !homeDisplay()) {
                         <button nz-button nzSize="small" (click)="editReport(team.clears[i]?.clear!)"><span nz-icon nzType="edit" nzTheme="outline"></span></button>
                         <nz-divider nzType="vertical"></nz-divider>
                         <button nz-button nzSize="small" (nzOnConfirm)="deleteReport(team.clears[i]?.clear!)" nzDanger nz-popconfirm nzPopconfirmTitle="Are you sure?"><span nz-icon nzType="delete" nzTheme="outline"></span></button>
@@ -62,7 +67,7 @@
                 <td>
                   <span nz-tooltip nzTooltipTitle="GMT: {{team.clears[0]?.date | date:'medium':'GMT'}}">
                   {{ team.clears[0]?.date | date:'short' || '' }}
-                    @if (team.clears[0] && userIsTracker$ | async) {
+                    @if (team.clears[0] && (userIsTracker$ | async) && !homeDisplay()) {
                       <button nz-button nzSize="small" (click)="editReport(team.clears[0]?.clear!)"><span nz-icon nzType="edit" nzTheme="outline"></span></button>
                       <nz-divider nzType="vertical"></nz-divider>
                       <button nz-button nzSize="small" (nzOnConfirm)="deleteReport(team.clears[0]?.clear!)" nzDanger nz-popconfirm nzPopconfirmTitle="Are you sure?"><span nz-icon nzType="delete" nzTheme="outline"></span></button>
@@ -72,12 +77,12 @@
               }
               <td>
                 @if (team.streams && team.streams[0]) {
-                  <a [href]="team.streams[0]" target="_blank">{{ team.streams[0] }}</a>
+                  <a [href]="team.streams[0]" target="_blank" class="stream-link">{{ team.streams[0] }}</a>
                 } @else {
                   No
                 }
               </td>
-              @if (!race.stopped && (userIsTracker$ | async)) {
+              @if (!race.stopped && (userIsTracker$ | async) && !homeDisplay()) {
                 <td>
                   <button nz-button nzDanger nzSize="small" nz-popconfirm nzPopconfirmTitle="Are you sure?"
                           (nzOnConfirm)="withdrawTeam(race, team)">

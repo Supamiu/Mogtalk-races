@@ -1,23 +1,34 @@
-<div nz-flex [nzVertical]="true">
+<div nz-flex [nzVertical]="true" class="home-container">
+  <div class="banner">
+    <img class="mogtalk" src="/assets/MogTalk_FullHD.png" alt="MogTalk">
+    <img class="x" src="/assets/X%20for%20banner.png" alt="X">
+    <img class="charity" src="/assets/WR%20logo.png" alt="World race for Charity">
+  </div>
   <div nz-flex nzGap="middle">
     <iframe
       src="https://embed.twitch.tv?channel=mogtalk&height=200&layout=video&muted=true&parent=localhost&parent=mogtalk-race.web.app&parent=mogtalk.org&referrer=https%3A%2F%2Fmogtalk.org%2F&width=500"
-      height="280"
-      width="500"
+      height="600"
+      width="1066"
       allowfullscreen>
     </iframe>
-
-    <div>
-      TODO Social links and probably more?
+    TODO COMPACT LEADERBOARD ETC
+  </div>
+  <div class="sponsors" nz-flex nzGap="large">
+    SPONSORED BY
+    <div nz-flex nzGap="middle">
+      <div>SPONSOR #1</div>
+      <div>SPONSOR #2</div>
+      <div>SPONSOR #3</div>
     </div>
   </div>
-
-  @if(runningRace$ | async; as race) {
-    <nz-divider nzOrientation="left" nzText="Current race: {{race.name}}"></nz-divider>
-    <h3></h3>
-    <app-leaderboard [race]="race"></app-leaderboard>
-  } @else {
-    <nz-divider nzOrientation="left" nzText="Current race"></nz-divider>
-    <nz-empty nzNotFoundContent="No race running"></nz-empty>
-  }
 </div>
+
+@if (runningRace$ | async; as race) {
+  <div class="race-container">
+    <div nz-flex nzAlign="center" nzJustify="center" [nzVertical]="true">
+      <h3 class="current-race">CURRENT RACE: {{ race.name | uppercase }}</h3>
+      <h2 class="clear-progress">CLEAR PROGRESS</h2>
+      <app-leaderboard [race]="race" [homeDisplay]="true"></app-leaderboard>
+    </div>
+  </div>
+}

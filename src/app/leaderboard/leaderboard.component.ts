@@ -23,6 +23,9 @@ import {NzDividerComponent} from "ng-zorro-antd/divider";
 import {ClearReport} from "../model/clear-report";
 import {ClearReportEditDialogComponent} from "./clear-report-edit/clear-report-edit-dialog.component";
 import {NzTooltipDirective} from "ng-zorro-antd/tooltip";
+import {NzSpaceComponent, NzSpaceItemDirective} from "ng-zorro-antd/space";
+import {RouterLink} from "@angular/router";
+import {NzFlexDirective} from "ng-zorro-antd/flex";
 
 @Component({
   selector: 'app-leaderboard',
@@ -38,7 +41,11 @@ import {NzTooltipDirective} from "ng-zorro-antd/tooltip";
     NzIconDirective,
     DatePipe,
     NzDividerComponent,
-    NzTooltipDirective
+    NzTooltipDirective,
+    NzSpaceComponent,
+    NzSpaceItemDirective,
+    RouterLink,
+    NzFlexDirective
   ],
   templateUrl: './leaderboard.component.html',
   styleUrl: './leaderboard.component.less'
@@ -56,6 +63,8 @@ export class LeaderboardComponent {
   #dialog = inject(NzModalService);
 
   race = input<Race>();
+
+  homeDisplay = input<boolean>()
 
   race$ = toObservable(this.race).pipe(
     filter(Boolean)

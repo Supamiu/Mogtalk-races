@@ -9,7 +9,7 @@ import {Team} from "../model/team";
 import {NzModalService} from "ng-zorro-antd/modal";
 import {TeamPickerComponent} from "./team-picker/team-picker.component";
 import {NzPageHeaderComponent, NzPageHeaderExtraDirective, NzPageHeaderTagDirective} from "ng-zorro-antd/page-header";
-import {AsyncPipe, DatePipe} from "@angular/common";
+import {AsyncPipe, DatePipe, UpperCasePipe} from "@angular/common";
 import {NzTagComponent} from "ng-zorro-antd/tag";
 import {NzSpaceComponent, NzSpaceItemDirective} from "ng-zorro-antd/space";
 import {NzPopconfirmDirective} from "ng-zorro-antd/popconfirm";
@@ -17,6 +17,9 @@ import {NzButtonComponent} from "ng-zorro-antd/button";
 import {NzDividerComponent} from "ng-zorro-antd/divider";
 import {NzSpinComponent} from "ng-zorro-antd/spin";
 import {LeaderboardComponent} from "../leaderboard/leaderboard.component";
+import {NzFlexDirective} from "ng-zorro-antd/flex";
+import {NzTransitionPatchDirective} from "ng-zorro-antd/core/transition-patch/transition-patch.directive";
+import {NzWaveDirective} from "ng-zorro-antd/core/wave";
 
 @Component({
   selector: 'app-race',
@@ -34,7 +37,9 @@ import {LeaderboardComponent} from "../leaderboard/leaderboard.component";
     NzSpinComponent,
     NzPageHeaderTagDirective,
     NzPageHeaderExtraDirective,
-    LeaderboardComponent
+    LeaderboardComponent,
+    NzFlexDirective,
+    UpperCasePipe
   ],
   templateUrl: './race.component.html',
   styleUrls: ['./race.component.less']

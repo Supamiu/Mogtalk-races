@@ -1,23 +1,25 @@
-@defer (when race$ | async) {
-  @if (race$ | async; as race) {
-    <nz-page-header [nzTitle]="race.name" [nzSubtitle]="race.type">
-      <nz-page-header-tags>
-        @switch (status$ | async) {
-          @case ("Running") {
-            <nz-tag [style.border-color]="'aqua'">Running since {{race.start.toDate() | date:'medium'}}</nz-tag>
+<div class="container">
+  @defer (when race$ | async) {
+    @if (race$ | async; as race) {
+      <div nz-flex nzAlign="center" nzJustify="center" [nzVertical]="true">
+        <div>
+          @switch (status$ | async) {
+            @case ("Running") {
+              Running since {{ race.start.toDate() | date:'short' }}
+            }
+            @case ("Planned") {
+              Starting {{ race.start.toDate() | date:'short' }}
+            }
+            @case ('Stopped') {
+              Started {{ race.start.toDate() | date:'short' }}
+              Ended {{ race.stopped?.toDate() | date:'short' }}
+            }
           }
-          @case ("Planned") {
-            <nz-tag [style.border-color]="'yellow'">Starting {{race.start.toDate() | date:'medium'}}</nz-tag>
-          }
-          @case ('Stopped') {
-            <nz-tag [style.border-color]="'aqua'">Started {{race.start.toDate() | date:'medium'}}</nz-tag>
-            <nz-tag [style.border-color]="'red'">Ended {{race.stopped?.toDate() | date:'medium'}}</nz-tag>
-          }
-        }
-      </nz-page-header-tags>
-      <nz-page-header-extra>
-        <nz-space>
-          @if (!race.stopped) {
+          - {{ race.type | uppercase }}
+        </div>
+        <h1>{{ race.name | uppercase }}</h1>
+        @if (!race.stopped) {
+          <div nz-space>
             @if (userIsTracker$ | async) {
               <button *nzSpaceItem nz-button nzType="primary" (click)="registerTeam(race)">Register teams</button>
             }
@@ -26,13 +28,12 @@
                       nzPopconfirmTitle="Are you sure? This cannot be undone" (nzOnConfirm)="stopRace(race)">Stop
               </button>
             }
-          }
-        </nz-space>
-      </nz-page-header-extra>
-    </nz-page-header>
-    <nz-divider nzOrientation="left" nzText="Leaderboard"></nz-divider>
-    <app-leaderboard [race]="race" (registerTeam)="registerTeam(race)"></app-leaderboard>
+          </div>
+        }
+        <app-leaderboard [race]="race" (registerTeam)="registerTeam(race)"></app-leaderboard>
+      </div>
+    }
+  } @loading {
+    <nz-spin nzSize="large"></nz-spin>
   }
-} @loading {
-  <nz-spin nzSize="large"></nz-spin>
-}
+</div>

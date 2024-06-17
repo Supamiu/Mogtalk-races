@@ -1,36 +1,34 @@
-<nz-page-header nzTitle="Races" nzSubtitle="All the races ! Past, present and future.">
-  @if(isAdmin$ | async){
-    <nz-page-header-extra>
-      <button nz-button nzType="primary" (click)="createRace()">
-        Create a new race
-      </button>
-    </nz-page-header-extra>
+<div nz-flex nzAlign="center" nzJustify="center" [nzVertical]="true">
+  <h1>RACES</h1>
+  @if (isAdmin$ | async) {
+    <button nz-button nzType="primary" (click)="createRace()">
+      Create a new race
+    </button>
   }
-</nz-page-header>
-<nz-row [nzGutter]="16">
-  <nz-col [nzLg]="6" *ngFor="let race of races$ | async">
-    <nz-card [nzCover]="bannerTpl" nzHoverable routerLink="/race/{{race.$key}}/{{race.name}}">
-      <ng-template #bannerTpl>
-        <img [src]="race.banner" alt="{{race.name}}'s banner">
-      </ng-template>
+</div>
 
-      <h2>{{race.name}}</h2>
-
-      <h3>{{race.type}}</h3>
-
-      <p *ngIf="race.phases.length > 0">{{race.phases.length}} Phases</p>
-
-      @switch(race.status){
-        @case ('ongoing') {
-          <nz-tag [style.border-color]="'aqua'">Running since {{race.start.toDate() | date:'medium'}}</nz-tag>
-        }
-        @case ('planned') {
-          <nz-tag [style.border-color]="'yellow'">Starting {{race.start.toDate() | date:'medium'}}</nz-tag>
-        }
-        @case ('ended') {
-          <nz-tag [style.border-color]="'red'">Ended</nz-tag>
-        }
-      }
-    </nz-card>
-  </nz-col>
-</nz-row>
+<div class="races">
+  <nz-row [nzGutter]="[64, 64]">
+    <nz-col [nzLg]="8" *ngFor="let race of races$ | async">
+      <div class="race-row" routerLink="/race/{{race.$key}}/{{race.name}}">
+        <div class="status">
+          @switch (race.status) {
+            @case ('ongoing') {
+              <nz-tag [style.border-color]="'aqua'">Running since {{ race.start.toDate() | date:'medium' }}</nz-tag>
+            }
+            @case ('planned') {
+              <nz-tag [style.border-color]="'yellow'">Starting {{ race.start.toDate() | date:'medium' }}</nz-tag>
+            }
+            @case ('ended') {
+              <nz-tag [style.border-color]="'red'">Ended</nz-tag>
+            }
+          }
+        </div>
+        <div class="name-and-type">
+          <h3 class="race-type">{{ race.type }}</h3>
+          <h2 class="race-name">{{ race.name }}</h2>
+        </div>
+      </div>
+    </nz-col>
+  </nz-row>
+</div>

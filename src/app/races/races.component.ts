@@ -21,11 +21,12 @@ import {NzPageHeaderComponent, NzPageHeaderExtraDirective} from "ng-zorro-antd/p
 import {NzModalService} from "ng-zorro-antd/modal";
 import {RaceCreationPopupComponent} from "./race-creation-popup/race-creation-popup.component";
 import {Race} from "../model/race";
+import {NzFlexDirective} from "ng-zorro-antd/flex";
 
 @Component({
   selector: 'app-races',
   standalone: true,
-  imports: [CommonModule, NzCardModule, ReactiveFormsModule, NzFormModule, NzInputModule, NzButtonModule, NzDatePickerModule, ImageCropperModule, NzSelectModule, NzIconModule, NzUploadModule, NzDividerModule, NzSpinModule, NzTagModule, RouterLink, NzPageHeaderComponent, NzPageHeaderExtraDirective],
+  imports: [CommonModule, NzCardModule, ReactiveFormsModule, NzFormModule, NzInputModule, NzButtonModule, NzDatePickerModule, ImageCropperModule, NzSelectModule, NzIconModule, NzUploadModule, NzDividerModule, NzSpinModule, NzTagModule, RouterLink, NzPageHeaderComponent, NzPageHeaderExtraDirective, NzFlexDirective],
   templateUrl: './races.component.html',
   styleUrls: ['./races.component.less']
 })
