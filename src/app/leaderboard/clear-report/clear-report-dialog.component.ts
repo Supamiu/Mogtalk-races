@@ -13,7 +13,7 @@ import {NzDividerComponent} from "ng-zorro-antd/divider";
 import {Timestamp} from "@angular/fire/firestore";
 import {getDownloadURL, ref, Storage, uploadBytes} from "@angular/fire/storage";
 import {ClearReportsService} from "../../database/clear-reports.service";
-import {Observable, of, startWith, switchMap, withLatestFrom} from "rxjs";
+import {Observable, of, startWith, switchMap, tap, withLatestFrom} from "rxjs";
 import {NzMessageService} from "ng-zorro-antd/message";
 import {AuthService} from "../../auth/auth.service";
 import {HistoryService} from "../../database/history.service";
@@ -96,7 +96,7 @@ export class ClearReportDialogComponent {
     this.loading = true;
     const raw: any = this.form.getRawValue();
     const reportId = this.#reportsService.generateId();
-    if ((!raw.team && !raw.customTeamName && !raw.customTeamDatacenter) || !raw.phase || !raw.date) {
+    if ((!raw.team && !raw.customTeamName && !raw.customTeamDatacenter) || (this.data.race.phases?.length > 0 && !raw.phase) || !raw.date) {
       return;
     }
     this.userIsTracker$.pipe(
