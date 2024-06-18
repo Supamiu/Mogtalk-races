@@ -97,6 +97,7 @@ export class ClearReportDialogComponent {
     const raw: any = this.form.getRawValue();
     const reportId = this.#reportsService.generateId();
     if ((!raw.team && !raw.customTeamName && !raw.customTeamDatacenter) || (this.data.race.phases?.length > 0 && !raw.phase) || !raw.date) {
+      this.loading = false;
       return;
     }
     this.userIsTracker$.pipe(
@@ -113,7 +114,7 @@ export class ClearReportDialogComponent {
           });
         });
 
-        const source$: Observable<null | string> = (userIsTracker && !this.screenshot) ? of(null) : screenshot$;
+        const source$: Observable<null | string> = ((userIsTracker || raw.url) && !this.screenshot) ? of('') : screenshot$;
 
         return source$
           .pipe(
@@ -123,6 +124,7 @@ export class ClearReportDialogComponent {
                 date: Timestamp.fromDate(raw.date),
                 phase: raw.phase || null,
                 screenshot: url || '',
+                url: raw.url || '',
                 race: this.data.race.$key || '',
                 raceName: this.data.race?.name,
                 accepted: userIsTracker
