@@ -13,7 +13,7 @@ import {NzDividerComponent} from "ng-zorro-antd/divider";
 import {Timestamp} from "@angular/fire/firestore";
 import {getDownloadURL, ref, Storage, uploadBytes} from "@angular/fire/storage";
 import {ClearReportsService} from "../../database/clear-reports.service";
-import {Observable, of, startWith, switchMap, tap, withLatestFrom} from "rxjs";
+import {Observable, of, startWith, switchMap, withLatestFrom} from "rxjs";
 import {NzMessageService} from "ng-zorro-antd/message";
 import {AuthService} from "../../auth/auth.service";
 import {HistoryService} from "../../database/history.service";
@@ -96,8 +96,20 @@ export class ClearReportDialogComponent {
     this.loading = true;
     const raw: any = this.form.getRawValue();
     const reportId = this.#reportsService.generateId();
-    if ((!raw.team && !raw.customTeamName && !raw.customTeamDatacenter) || (this.data.race.phases?.length > 0 && !raw.phase) || !raw.date) {
+    if ((!raw.team && (!raw.customTeamName || !raw.customTeamDatacenter)) || (this.data.race.phases?.length > 0 && !raw.phase) || !raw.date) {
       this.loading = false;
+      if (!raw.team && !raw.customTeamName) {
+        this.#message.error('Missing custom team name');
+      }
+      if (!raw.team && !raw.customTeamDatacenter) {
+        this.#message.error('Missing custom team Datacenter');
+      }
+      if (this.data.race.phases?.length > 0 && !raw.phase) {
+        this.#message.error('Missing phase');
+      }
+      if (!raw.date) {
+        this.#message.error('Missing clear time');
+      }
       return;
     }
     this.userIsTracker$.pipe(
