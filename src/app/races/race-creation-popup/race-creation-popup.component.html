@@ -8,6 +8,34 @@
     </nz-form-control>
   </nz-form-item>
   <nz-form-item>
+    <nz-form-control nzErrorTip="Don't forget to apply the image by clicking the button below"
+                     nzExtra="The banner image for this race (requires name to be set first)">
+      <div>
+        <nz-spin [nzSpinning]="savingImage">
+          <div class="flex-column gap-5">
+            <input type="file" nz-input (change)="fileChangeEvent($event)" [disabled]="!newRaceForm.value.name"/>
+
+            <image-cropper
+              *ngIf="imageChangedEvent"
+              [imageChangedEvent]="imageChangedEvent"
+              [maintainAspectRatio]="true"
+              [aspectRatio]="21/9"
+              [resizeToWidth]="700"
+              [resizeToHeight]="300"
+              format="png"
+              (imageCropped)="imageCropped($event)"
+            ></image-cropper>
+
+            <button nz-button nzBlock nzType="primary" type="button"
+                    [disabled]="!croppedImage || savingImage" (click)="setBanner()">
+              Apply
+            </button>
+          </div>
+        </nz-spin>
+      </div>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
     <nz-form-label nzRequired>Start time</nz-form-label>
     <nz-form-control>
       <nz-date-picker formControlName="start" nzShowTime></nz-date-picker>
