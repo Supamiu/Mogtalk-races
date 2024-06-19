@@ -11,22 +11,25 @@
   <nz-row [nzGutter]="[64, 64]">
     <nz-col [nzLg]="8" *ngFor="let race of races$ | async">
       <div class="race-row" routerLink="/race/{{race.$key}}/{{race.name}}">
-        <div class="status">
-          @switch (race.status) {
-            @case ('ongoing') {
-              <nz-tag [style.border-color]="'aqua'">Running since {{ race.start.toDate() | date:'medium' }}</nz-tag>
+        <div class="race-row-content">
+          <img [src]="race.banner" class="race-banner" alt="">
+          <div class="status">
+            @switch (race.status) {
+              @case ('ongoing') {
+                <nz-tag [style.border-color]="'aqua'">Running since {{ race.start.toDate() | date:'medium' }}</nz-tag>
+              }
+              @case ('planned') {
+                <nz-tag [style.border-color]="'yellow'">Starting {{ race.start.toDate() | date:'medium' }}</nz-tag>
+              }
+              @case ('ended') {
+                <nz-tag [style.border-color]="'red'">Ended</nz-tag>
+              }
             }
-            @case ('planned') {
-              <nz-tag [style.border-color]="'yellow'">Starting {{ race.start.toDate() | date:'medium' }}</nz-tag>
-            }
-            @case ('ended') {
-              <nz-tag [style.border-color]="'red'">Ended</nz-tag>
-            }
-          }
-        </div>
-        <div class="name-and-type">
-          <h3 class="race-type">{{ race.type }}</h3>
-          <h2 class="race-name">{{ race.name }}</h2>
+          </div>
+          <div class="name-and-type">
+            <h3 class="race-type">{{ race.type }}</h3>
+            <h2 class="race-name">{{ race.name }}</h2>
+          </div>
         </div>
       </div>
     </nz-col>

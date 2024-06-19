@@ -19,9 +19,8 @@
               *ngIf="imageChangedEvent"
               [imageChangedEvent]="imageChangedEvent"
               [maintainAspectRatio]="true"
-              [aspectRatio]="21/9"
+              [aspectRatio]="16/9"
               [resizeToWidth]="700"
-              [resizeToHeight]="300"
               format="png"
               (imageCropped)="imageCropped($event)"
             ></image-cropper>

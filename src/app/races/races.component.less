@@ -14,7 +14,28 @@ h1 {
   background: rgb(147, 25, 57);
   background: linear-gradient(180deg, rgba(147, 25, 57, 1) 0%, rgba(90, 14, 35, 1) 100%);
   box-shadow: 5px 7px 15px -3px #0C0C0C;
-  position: relative;
+
+  .race-row-content {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    overflow: clip;
+  }
+
+  .race-banner {
+    position: absolute;
+    opacity: 0.9;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .status > nz-tag {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    background-color: #0C0C0C;
+  }
 
   &:hover {
     box-shadow: 5px 7px 20px 0 #0C0C0C;
@@ -25,6 +46,8 @@ h1 {
     bottom: 5px;
     right: 5px;
     text-align: end;
+    text-shadow: 2px 0 #000, -2px 0 #000, 0 2px #000, 0 -2px #000,
+    1px 1px #000, -1px -1px #000, 1px -1px #000, -1px 1px #000;
 
     .race-name {
       font-size: 32px;
