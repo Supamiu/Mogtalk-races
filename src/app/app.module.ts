@@ -26,6 +26,7 @@ import {NzFlexDirective} from "ng-zorro-antd/flex";
 import {NzModalModule} from "ng-zorro-antd/modal";
 import {NzAvatarComponent} from "ng-zorro-antd/avatar";
 import {NzBadgeComponent} from "ng-zorro-antd/badge";
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 registerLocaleData(en);
 
@@ -58,7 +59,8 @@ const icons: IconDefinition[] = [
         NzFlexDirective,
         NzModalModule,
         NzAvatarComponent,
-        NzBadgeComponent
+        NzBadgeComponent,
+        FontAwesomeModule
     ],
   providers: [
     {provide: NZ_I18N, useValue: en_US},

@@ -1,7 +1,7 @@
 import {Component, inject} from '@angular/core';
 import {RaceService} from "../database/race.service";
 import {Timestamp, where} from "@angular/fire/firestore";
-import {map} from "rxjs";
+import {map, shareReplay} from "rxjs";
 import {AsyncPipe, DatePipe, UpperCasePipe} from "@angular/common";
 import {LeaderboardComponent} from "../leaderboard/leaderboard.component";
 import {NzFlexDirective} from "ng-zorro-antd/flex";
@@ -15,19 +15,19 @@ import {NzSpinComponent} from "ng-zorro-antd/spin";
 @Component({
   selector: 'app-home',
   standalone: true,
-    imports: [
-        AsyncPipe,
-        LeaderboardComponent,
-        NzFlexDirective,
-        NzDividerComponent,
-        NzEmptyComponent,
-        DatePipe,
-        NzButtonComponent,
-        NzPopconfirmDirective,
-        NzSpaceComponent,
-        NzSpinComponent,
-        UpperCasePipe
-    ],
+  imports: [
+    AsyncPipe,
+    LeaderboardComponent,
+    NzFlexDirective,
+    NzDividerComponent,
+    NzEmptyComponent,
+    DatePipe,
+    NzButtonComponent,
+    NzPopconfirmDirective,
+    NzSpaceComponent,
+    NzSpinComponent,
+    UpperCasePipe
+  ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.less'
 })
@@ -37,7 +37,8 @@ export class HomeComponent {
   runningRace$ = this.#raceService.query(where('start', '<=', Timestamp.now())).pipe(
     map(races => {
       return races.filter(r => !r.stopped)[0]
-    })
+    }),
+    shareReplay(1)
   )
 
 }

@@ -11,7 +11,11 @@
       width="1066"
       allowfullscreen>
     </iframe>
-    TODO COMPACT LEADERBOARD ETC
+    <div nz-flex [nzVertical]="true" nzAlign="center" nzFlex="1 1 auto">
+      @if (runningRace$ | async; as race) {
+        <app-leaderboard [race]="race" [homeDisplay]="true" [compact]="true"></app-leaderboard>
+      }
+    </div>
   </div>
   <div class="sponsors" nz-flex nzGap="large">
     SPONSORED BY

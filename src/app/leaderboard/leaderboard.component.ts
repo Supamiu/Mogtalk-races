@@ -26,6 +26,10 @@ import {NzTooltipDirective} from "ng-zorro-antd/tooltip";
 import {NzSpaceComponent, NzSpaceItemDirective} from "ng-zorro-antd/space";
 import {RouterLink} from "@angular/router";
 import {NzFlexDirective} from "ng-zorro-antd/flex";
+import {NzColDirective, NzRowDirective} from "ng-zorro-antd/grid";
+import {FontAwesomeModule} from "@fortawesome/angular-fontawesome";
+import {faDiscord, faTwitter, faYoutube} from "@fortawesome/free-brands-svg-icons";
+import {faEnvelope} from "@fortawesome/free-solid-svg-icons";
 
 @Component({
   selector: 'app-leaderboard',
@@ -45,12 +49,20 @@ import {NzFlexDirective} from "ng-zorro-antd/flex";
     NzSpaceComponent,
     NzSpaceItemDirective,
     RouterLink,
-    NzFlexDirective
+    NzFlexDirective,
+    NzRowDirective,
+    NzColDirective,
+    FontAwesomeModule
   ],
   templateUrl: './leaderboard.component.html',
   styleUrl: './leaderboard.component.less'
 })
 export class LeaderboardComponent {
+
+  twitter = faTwitter;
+  youtube=faYoutube;
+  discord = faDiscord;
+  mail = faEnvelope;
 
   #teamsService = inject(TeamsService);
 
@@ -64,7 +76,9 @@ export class LeaderboardComponent {
 
   race = input<Race>();
 
-  homeDisplay = input<boolean>()
+  homeDisplay = input<boolean>();
+
+  compact = input<boolean>();
 
   race$ = toObservable(this.race).pipe(
     filter(Boolean)
@@ -159,7 +173,7 @@ export class LeaderboardComponent {
                 if (race.phases.length > 0) {
                   clearsDisplay = race.phases.map(phase => {
                     const clear = teamClears.find(clear => clear.phase === phase);
-                    if(clear){
+                    if (clear) {
                       return {
                         date: clear.date.toDate(),
                         clear
@@ -171,6 +185,7 @@ export class LeaderboardComponent {
                 return {
                   ...team,
                   clears: clearsDisplay,
+                  lastClear: clearsDisplay.length
                 }
               })
               .sort((a, b) => {

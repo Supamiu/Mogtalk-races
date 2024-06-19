@@ -22,37 +22,63 @@
           }
         </div>
       }
-      <nz-table #teamsTable [nzData]="teams" [nzPageSize]="10" [nzNoResult]="emptyTpl" nzHideOnSinglePage>
-        <thead>
-        <tr>
-          @for (column of columns$ | async; track column.name) {
-            @if (column.filterFn) {
-              @if (column.possibleValues) {
-                <th [nzSortFn]="column.comparator" [nzSortPriority]="column.priority"
-                    [nzFilters]="column.possibleValues || []" [nzFilterFn]="column.filterFn || null">
-                  {{ column.name }}
-                </th>
+      @if (compact()) {
+        <div nz-flex [nzVertical]="true" nzAlign="center" nzGap="large">
+          <div class="compact-display" nz-flex [nzVertical]="true" nzAlign="center">
+            <h3>LEADERBOARD</h3>
+            <div class="teams">
+              @for (team of teams.slice(0, 5); track team.$key) {
+                <div nz-row class="compact-team">
+                  <div nz-col nzSpan="14">{{ team.name }}</div>
+                  <div nz-col [nzSpan]="race.phases?.length ? 6 : 10" [class.text-end]="race.phases?.length === 0">{{ team.lastClear === race.phases.length ? 'Progress' : 'Cleared' }}</div>
+                  @if (race.phases?.length) {
+                    <div nz-col nzSpan="4">{{ team.lastClear }}/{{ race.phases.length }}</div>
+                  }
+                </div>
               }
-            } @else {
-              <th [nzSortFn]="column.comparator" [nzSortPriority]="column.priority">{{ column.name }}</th>
+            </div>
+          </div>
+          <button nz-button nzType="primary" (click)="openReportForm(teams)" class="race-submissions">RACE SUBMISSIONS</button>
+          <a nz-button nzType="link" href="https://mogtalk.org" class="mogtalk-button">MogTalk website</a>
+          <div class="social-buttons" nz-flex nzGap="small">
+            <a class="social discord" href="https://discord.gg/4DxcTK3" target="_blank"><fa-icon [icon]="discord"></fa-icon></a>
+            <a class="social twitter" href="https://twitter.com/FrostyTVstream" target="_blank"><fa-icon [icon]="twitter"></fa-icon></a>
+            <a class="social youtube" href="https://www.youtube.com/channel/UCUJAdxB47uXUZSIW999clpw" target="_blank"><fa-icon [icon]="youtube"></fa-icon></a>
+            <a class="social mail" href="mailto:frostyffxiv@gmail.com" target="_blank"><fa-icon [icon]="mail"></fa-icon></a>
+          </div>
+        </div>
+      } @else {
+        <nz-table #teamsTable [nzData]="teams" [nzPageSize]="10" [nzNoResult]="emptyTpl" nzHideOnSinglePage>
+          <thead>
+          <tr>
+            @for (column of columns$ | async; track column.name) {
+              @if (column.filterFn) {
+                @if (column.possibleValues) {
+                  <th [nzSortFn]="column.comparator" [nzSortPriority]="column.priority"
+                      [nzFilters]="column.possibleValues || []" [nzFilterFn]="column.filterFn || null">
+                    {{ column.name }}
+                  </th>
+                }
+              } @else {
+                <th [nzSortFn]="column.comparator" [nzSortPriority]="column.priority">{{ column.name }}</th>
+              }
             }
-          }
-          @if (!race.stopped && (userIsTracker$ | async) && !homeDisplay()) {
-            <th>
-            </th>
-          }
-        </tr>
-        </thead>
-        <tbody>
-          @for (team of teamsTable.data; track team.$key) {
-            <tr>
-              <td>{{ team.rank }}</td>
-              <td>{{ team.name }}</td>
-              <td>{{ team.datacenter }}</td>
-              <td>{{ team.region }}</td>
-              @if (race.phases.length > 0) {
-                @for (phase of race.phases; track phase; let i = $index) {
-                  <td>
+            @if (!race.stopped && (userIsTracker$ | async) && !homeDisplay()) {
+              <th>
+              </th>
+            }
+          </tr>
+          </thead>
+          <tbody>
+            @for (team of teamsTable.data; track team.$key) {
+              <tr>
+                <td>{{ team.rank }}</td>
+                <td>{{ team.name }}</td>
+                <td>{{ team.datacenter }}</td>
+                <td>{{ team.region }}</td>
+                @if (race.phases.length > 0) {
+                  @for (phase of race.phases; track phase; let i = $index) {
+                    <td>
                     <span nz-tooltip nzTooltipTitle="GMT: {{team.clears[0]?.date | date:'medium':'GMT'}}">
                       {{ team.clears[i]?.date | date:'short' || '' }}
                       @if (team.clears[i] && (userIsTracker$ | async) && !homeDisplay()) {
@@ -61,10 +87,10 @@
                         <button nz-button nzSize="small" (nzOnConfirm)="deleteReport(team.clears[i]?.clear!)" nzDanger nz-popconfirm nzPopconfirmTitle="Are you sure?"><span nz-icon nzType="delete" nzTheme="outline"></span></button>
                       }
                     </span>
-                  </td>
-                }
-              } @else {
-                <td>
+                    </td>
+                  }
+                } @else {
+                  <td>
                   <span nz-tooltip nzTooltipTitle="GMT: {{team.clears[0]?.date | date:'medium':'GMT'}}">
                   {{ team.clears[0]?.date | date:'short' || '' }}
                     @if (team.clears[0] && (userIsTracker$ | async) && !homeDisplay()) {
@@ -73,27 +99,28 @@
                       <button nz-button nzSize="small" (nzOnConfirm)="deleteReport(team.clears[0]?.clear!)" nzDanger nz-popconfirm nzPopconfirmTitle="Are you sure?"><span nz-icon nzType="delete" nzTheme="outline"></span></button>
                     }
                   </span>
-                </td>
-              }
-              <td>
-                @if (team.streams && team.streams[0]) {
-                  <a [href]="team.streams[0]" target="_blank" class="stream-link">{{ team.streams[0] }}</a>
-                } @else {
-                  No
+                  </td>
                 }
-              </td>
-              @if (!race.stopped && (userIsTracker$ | async) && !homeDisplay()) {
                 <td>
-                  <button nz-button nzDanger nzSize="small" nz-popconfirm nzPopconfirmTitle="Are you sure?"
-                          (nzOnConfirm)="withdrawTeam(race, team)">
-                    <label nz-icon nzType="delete"></label>
-                  </button>
+                  @if (team.streams && team.streams[0]) {
+                    <a [href]="team.streams[0]" target="_blank" class="stream-link">{{ team.streams[0] }}</a>
+                  } @else {
+                    No
+                  }
                 </td>
-              }
-            </tr>
-          }
-        </tbody>
-      </nz-table>
+                @if (!race.stopped && (userIsTracker$ | async) && !homeDisplay()) {
+                  <td>
+                    <button nz-button nzDanger nzSize="small" nz-popconfirm nzPopconfirmTitle="Are you sure?"
+                            (nzOnConfirm)="withdrawTeam(race, team)">
+                      <label nz-icon nzType="delete"></label>
+                    </button>
+                  </td>
+                }
+              </tr>
+            }
+          </tbody>
+        </nz-table>
+      }
     }
   } @loading {
     <nz-spin nzSize="large"></nz-spin>
