@@ -79,11 +79,11 @@
                 @if (race.phases.length > 0) {
                   @for (phase of race.phases; track phase; let i = $index) {
                     <td>
-                    <span nz-tooltip nzTooltipTitle="GMT: {{team.clears[0]?.date | date:'medium':'GMT'}}">
+                    <span nz-tooltip nzTooltipTitle="GMT: {{team.clears[i]?.date | date:'medium':'GMT'}}">
                       {{ team.clears[i]?.date | date:'short' || '' }}
                       @if (team.clears[i] && (userIsTracker$ | async) && !homeDisplay()) {
                         <button nz-button nzSize="small" (click)="editReport(team.clears[i]?.clear!)"><span nz-icon nzType="edit" nzTheme="outline"></span></button>
-                        <nz-divider nzType="vertical"></nz-divider>
+                        &nbsp;
                         <button nz-button nzSize="small" (nzOnConfirm)="deleteReport(team.clears[i]?.clear!)" nzDanger nz-popconfirm nzPopconfirmTitle="Are you sure?"><span nz-icon nzType="delete" nzTheme="outline"></span></button>
                       }
                     </span>
