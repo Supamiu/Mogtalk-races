@@ -21,7 +21,7 @@
         @if (!race.stopped) {
           <div nz-space>
             @if (userIsTracker$ | async) {
-              <button *nzSpaceItem nz-button nzType="primary" (click)="registerTeam(race)">Register teams</button>
+              <button *nzSpaceItem nz-button nzType="primary" (click)="registerTeam(race)" class="register-button">Register teams</button>
             }
             @if ((isAdmin$ | async)) {
               <button *nzSpaceItem nz-button nzDanger nzType="primary" nz-popconfirm
