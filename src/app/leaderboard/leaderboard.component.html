@@ -12,7 +12,7 @@
           </ng-template>
         </nz-empty>
       </ng-template>
-      @if (!homeDisplay()) {
+      @if (!homeDisplay() && (userIsTracker$ | async)) {
         <div nz-flex>
           <button nz-button nzType="link" class="back-button" routerLink="/races">< BACK</button>
           @if (teams.length > 0 && (raceIsRunning$ | async)) {
@@ -38,7 +38,9 @@
               }
             </div>
           </div>
-          <button nz-button nzType="primary" (click)="openReportForm(teams)" class="race-submissions">RACE SUBMISSIONS</button>
+          @if(userIsTracker$ | async) {
+            <button nz-button nzType="primary" (click)="openReportForm(teams)" class="race-submissions">RACE SUBMISSIONS</button>
+          }
           <a nz-button nzType="link" href="https://mogtalk.org" class="mogtalk-button">MogTalk website</a>
           <div class="social-buttons" nz-flex nzGap="small">
             <a class="social discord" href="https://discord.gg/4DxcTK3" target="_blank"><fa-icon [icon]="discord"></fa-icon></a>
