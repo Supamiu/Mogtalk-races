@@ -12,7 +12,7 @@
           </ng-template>
         </nz-empty>
       </ng-template>
-      @if (!homeDisplay()) {
+      @if (!homeDisplay() || (userIsTracker$ | async)) {
         <div nz-flex>
           <button nz-button nzType="link" class="back-button" routerLink="/races">< BACK</button>
           @if (teams.length > 0 && (raceIsRunning$ | async) && (userIsTracker$ | async)) {
