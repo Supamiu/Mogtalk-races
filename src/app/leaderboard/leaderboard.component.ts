@@ -88,6 +88,10 @@ export class LeaderboardComponent {
     map(race => !race.stopped && race.start.toMillis() < Date.now())
   );
 
+  raceWillStart$ = this.race$.pipe(
+    map(race => race.start.toMillis() > Date.now())
+  );
+
   @Output()
   registerTeam = new EventEmitter<void>();
 
@@ -133,12 +137,12 @@ export class LeaderboardComponent {
         ...(race.phases.length > 0 ? race.phases.map((phase, i) => {
           return {
             name: phase,
-            comparator: (a: any, b: any) => (a.clears[i]?.getTime() || Infinity) - (b.clears[i]?.getTime() || Infinity),
+            comparator: (a: any, b: any) => (a.clears[i]?.date?.getTime() || Infinity) - (b.clears[i]?.date?.getTime() || Infinity),
             priority: 1
           }
         }) : [{
           name: 'Clear',
-          comparator: (a: any, b: any) => (a.clears[0]?.getTime() || Infinity) - (b.clears[0]?.getTime() || Infinity),
+          comparator: (a: any, b: any) => (a.clears[0]?.date?.getTime() || Infinity) - (b.clears[0]?.date?.getTime() || Infinity),
           priority: 1
         }]),
         {

@@ -21,12 +21,6 @@
           <button nz-button nzDanger (click)="signOut()">SIGN OUT</button>
         </div>
       }
-    } @else {
-      <div nz-flex nzAlign="center" nzGap="small">
-        <button nz-button nzType="primary" (click)="openSignInPopup()">SIGN IN</button>
-        or
-        <button nz-button (click)="openRegisterPopup()">REGISTER</button>
-      </div>
     }
   </nz-header>
   <nz-content>
