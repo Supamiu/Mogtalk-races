@@ -1,8 +1,8 @@
 <div nz-flex [nzVertical]="true" class="home-container">
   <div class="banner">
-    <img class="mogtalk" src="/assets/MogTalk_FullHD.png" alt="MogTalk">
-    <img class="x" src="/assets/X%20for%20banner.png" alt="X">
-    <img class="charity" src="/assets/WR%20logo.png" alt="World race for Charity">
+<!--    <img class="mogtalk" src="/assets/MogTalk_FullHD.png" alt="MogTalk">-->
+<!--    <img class="x" src="/assets/X%20for%20banner.png" alt="X">-->
+    <img src="./assets/Website_logo_with_mtndew.png" alt="" class="main-logo">
   </div>
   <div nz-flex nzGap="middle">
     <iframe
@@ -11,18 +11,10 @@
       width="977"
       allowfullscreen>
     </iframe>
-    <div nz-flex [nzVertical]="true" nzAlign="center" nzFlex="1 1 auto">
+    <div nz-flex [nzVertical]="true" nzAlign="center" nzFlex="1 1 auto" nzJustify="center">
       @if (runningRace$ | async; as race) {
         <app-leaderboard [race]="race" [homeDisplay]="true" [compact]="true"></app-leaderboard>
       }
-    </div>
-  </div>
-  <div class="sponsors" nz-flex nzGap="large">
-    SPONSORED BY
-    <div nz-flex nzGap="middle">
-      <div>SPONSOR #1</div>
-      <div>SPONSOR #2</div>
-      <div>SPONSOR #3</div>
     </div>
   </div>
 </div>
@@ -33,6 +25,16 @@
       <h3 class="current-race">CURRENT RACE: {{ race.name | uppercase }}</h3>
       <h2 class="clear-progress">CLEAR PROGRESS</h2>
       <app-leaderboard [race]="race" [homeDisplay]="true"></app-leaderboard>
+    </div>
+    <div class="sponsors" nz-flex nzGap="large">
+      SPONSORED BY
+      <div nz-flex nzGap="middle">
+        <img class="sponsor-logo" src="./assets/Sakuraco_Logo.png" alt="Sakuraco">
+        <img class="sponsor-logo" src="./assets/ANATY_Logo.png" alt="ANATY">
+        <img class="sponsor-logo" src="./assets/battle_beaver_primary_logo_full_color_1000px.png" alt="Battle Beaver">
+        <img class="sponsor-logo" src="./assets/Corsair-logo.png" alt="Corsair">
+        <img class="sponsor-logo" src="./assets/GatewayFate.png" alt="GATEway FATE">
+      </div>
     </div>
   </div>
 }

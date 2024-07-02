@@ -27,6 +27,10 @@ const routes: Routes = [
     loadComponent: () => import('./race/race.component').then(c => c.RaceComponent)
   },
   {
+    path: 'login',
+    loadComponent: () => import('./auth/login-popup/login-popup.component').then(c => c.LoginPopupComponent)
+  },
+  {
     path: '',
     loadComponent: () => import('./home/home.component').then(c => c.HomeComponent)
   }

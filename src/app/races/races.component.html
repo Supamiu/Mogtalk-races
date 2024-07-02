@@ -1,6 +1,6 @@
 <div nz-flex nzAlign="center" nzJustify="center" [nzVertical]="true">
   <h1>RACES</h1>
-  @if (isAdmin$ | async) {
+  @if (userIsTracker$ | async) {
     <button nz-button nzType="primary" (click)="createRace()">
       Create a new race
     </button>

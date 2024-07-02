@@ -57,8 +57,8 @@ export class RacesComponent {
     })
   );
 
-  public isAdmin$ = this.#auth.user$.pipe(
-    map(user => user.admin)
+  public userIsTracker$ = this.#auth.user$.pipe(
+    map(user => user.admin || user.tracker)
   );
 
   createRace(): void {

@@ -5,6 +5,7 @@ import {FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/
 import {NzButtonComponent} from "ng-zorro-antd/button";
 import {AuthService} from "../auth.service";
 import {NzModalRef} from "ng-zorro-antd/modal";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-login-popup',
@@ -24,7 +25,8 @@ import {NzModalRef} from "ng-zorro-antd/modal";
 export class LoginPopupComponent {
 
   #authService = inject(AuthService);
-  #ref = inject(NzModalRef);
+  #ref = inject(NzModalRef, {optional: true});
+  #router = inject(Router);
 
   form = new FormGroup({
     email: new FormControl('', [Validators.required, Validators.email]),
@@ -35,7 +37,12 @@ export class LoginPopupComponent {
     const {email, password} = this.form.getRawValue();
     if (email && password) {
       this.#authService.loginWithEmail(email, password).subscribe(() => {
-        this.#ref.close();
+        if (this.#ref) {
+          this.#ref?.close();
+        } else {
+          this.#router.navigateByUrl('/')
+        }
+
       });
     }
   }

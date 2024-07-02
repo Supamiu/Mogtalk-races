@@ -1,9 +1,25 @@
 :host {
   font-weight: 200;
 
+  table {
+    background-color: #0C0C0C;
+  }
+
   ::ng-deep {
     .ant-table-cell {
-      font-size: 14px;
+      font-size: 16px;
+    }
+
+    .ant-table-wrapper {
+      box-shadow: 1px 1px 10px black;
+      padding: 10px;
+      background: #0c0c0c;
+    }
+
+    tbody {
+      .ant-table-row:nth-child(odd) {
+        background-color: rgba(255, 255, 255, .1);
+      }
     }
   }
 }
