@@ -23,6 +23,10 @@ const routes: Routes = [
     canActivate: [trackerGuard]
   },
   {
+    path: 'leaderboard-overlay',
+    loadComponent: () => import('./leaderboard/overlay/overlay.component').then(c => c.OverlayComponent)
+  },
+  {
     path: 'race/:id/:name',
     loadComponent: () => import('./race/race.component').then(c => c.RaceComponent)
   },

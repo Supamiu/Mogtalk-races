@@ -60,7 +60,7 @@ import {faEnvelope} from "@fortawesome/free-solid-svg-icons";
 export class LeaderboardComponent {
 
   twitter = faTwitter;
-  youtube=faYoutube;
+  youtube = faYoutube;
   discord = faDiscord;
   mail = faEnvelope;
 
@@ -77,6 +77,8 @@ export class LeaderboardComponent {
   race = input<Race>();
 
   homeDisplay = input<boolean>();
+
+  overlayDisplay = input<boolean>();
 
   compact = input<boolean>();
 

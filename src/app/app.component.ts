@@ -1,10 +1,7 @@
-import {Component, inject} from '@angular/core';
+import {afterNextRender, Component, inject} from '@angular/core';
 import {AuthService} from "./auth/auth.service";
-import {NzModalService} from "ng-zorro-antd/modal";
-import {RegisterPopupComponent} from "./auth/register-popup/register-popup.component";
 import {filter, map, switchMap} from "rxjs";
 import {UsersService} from "./database/users.service";
-import {LoginPopupComponent} from "./auth/login-popup/login-popup.component";
 import {ClearReportsService} from "./database/clear-reports.service";
 
 @Component({
@@ -15,8 +12,8 @@ import {ClearReportsService} from "./database/clear-reports.service";
 export class AppComponent {
   auth = inject(AuthService);
   #usersService = inject(UsersService);
-  #dialog = inject(NzModalService);
   #reportsService = inject(ClearReportsService);
+  isOverlay = false;
 
   character$ = this.auth.user$.pipe(
     filter(Boolean),
@@ -29,23 +26,13 @@ export class AppComponent {
     map(reports => reports.length)
   )
 
-  openRegisterPopup(): void {
-    this.#dialog.create({
-      nzContent: RegisterPopupComponent,
-      nzTitle: 'Register',
-      nzFooter: null
+  constructor() {
+    afterNextRender(() => {
+      this.isOverlay = window.location.href.includes('-overlay');
     });
   }
 
-  openSignInPopup(): void {
-    this.#dialog.create({
-      nzContent: LoginPopupComponent,
-      nzTitle: 'Sign In',
-      nzFooter: null
-    });
-  }
-
-  signOut():void{
+  signOut(): void {
     this.auth.signOut();
   }
 }
