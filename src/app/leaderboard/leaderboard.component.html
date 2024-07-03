@@ -14,7 +14,9 @@
       </ng-template>
       @if (!homeDisplay() || (userIsTracker$ | async)) {
         <div nz-flex>
-          <button nz-button nzType="link" class="back-button" routerLink="/races">< BACK</button>
+          @if (!homeDisplay()) {
+            <button nz-button nzType="link" class="back-button" routerLink="/races">< BACK</button>
+          }
           @if (teams.length > 0 && (raceIsRunning$ | async) && (userIsTracker$ | async)) {
             <button nz-button nzBlock nzType="primary" class="report-button" (click)="openReportForm(teams)">Report
               clear/progress (tracker)

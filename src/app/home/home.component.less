@@ -1,9 +1,15 @@
 .home-container {
   background: #0C0C0C;
   padding: 30px 80px;
+  @media (max-width: 600px) {
+    padding: 10px 20px;
+  }
 
   .main-logo {
     max-height: 300px;
+    @media (max-width: 600px) {
+      max-height: 150px;
+    }
   }
 
   .banner {
@@ -34,9 +40,19 @@
   font-size: 40px;
   font-weight: bold;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 24px;
+
+  .sponsored-by {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 24px;
+    background-color: #0C0C0C;
+    align-self: stretch;
+  }
 
   .sponsor-logo {
     max-height: 100px;
@@ -56,7 +72,9 @@
 
   app-leaderboard {
     margin-top: 20px;
-    width: 60vw;
+    @media (max-width: 600px) {
+      width: 90vw;
+    }
     display: block;
   }
 

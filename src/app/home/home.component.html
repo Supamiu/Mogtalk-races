@@ -4,7 +4,7 @@
 <!--    <img class="x" src="/assets/X%20for%20banner.png" alt="X">-->
     <img src="./assets/Website_logo_with_mtndew.png" alt="" class="main-logo">
   </div>
-  <div nz-flex nzGap="middle">
+  <div nz-flex nzGap="middle" nzWrap="wrap">
     <iframe
       src="https://embed.twitch.tv?channel=mogtalk&height=200&layout=video&muted=true&parent=localhost&parent=mogtalk-race.web.app&parent=mogtalk.org&referrer=https%3A%2F%2Fmogtalk.org%2F&width=500"
       height="550"
@@ -26,9 +26,12 @@
       <h2 class="clear-progress">CLEAR PROGRESS</h2>
       <app-leaderboard [race]="race" [homeDisplay]="true"></app-leaderboard>
     </div>
-    <div class="sponsors" nz-flex nzGap="large">
-      SPONSORED BY
-      <div nz-flex nzGap="middle">
+    <div class="sponsors">
+      <div class="sponsored-by">
+        SPONSORED BY
+      </div>
+
+      <div nz-flex nzGap="middle" nzWrap="wrap">
         <img class="sponsor-logo" src="./assets/Sakuraco_Logo.png" alt="Sakuraco">
         <img class="sponsor-logo" src="./assets/ANATY_Logo.png" alt="ANATY">
         <img class="sponsor-logo" src="./assets/battle_beaver_primary_logo_full_color_1000px.png" alt="Battle Beaver">
