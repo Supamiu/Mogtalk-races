@@ -35,13 +35,11 @@ export class HomeComponent {
   #raceService = inject(RaceService)
 
   runningRace$ = this.#raceService.query(where('start', '<=', Timestamp.now())).pipe(
-    map(races => {
-      return races.filter(r => !r.stopped)[0]
-    }),
-    switchMap(race => {
+    switchMap(startedRaces => {
+      const race = startedRaces.filter(r => !r.stopped)[0];
       if (!race) {
         return this.#raceService.query(where('start', '>', Timestamp.now()), orderBy('start')).pipe(
-          map(races => races[0])
+          map(races => races[0] ? races[0] : startedRaces[0])
         )
       }
       return of(race)
