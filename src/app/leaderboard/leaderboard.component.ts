@@ -59,6 +59,9 @@ import {faEnvelope} from "@fortawesome/free-solid-svg-icons";
 })
 export class LeaderboardComponent {
 
+  reportForm = 'https://forms.gle/xDCcVKupHMAkwMiV8';
+  preRegistrationForm = 'https://forms.gle/A59km1q8n77ZgEGf8';
+
   twitter = faTwitter;
   youtube = faYoutube;
   discord = faDiscord;
@@ -188,10 +191,17 @@ export class LeaderboardComponent {
                     return undefined;
                   });
                 }
+                let lastClearIndex = -1;
+                for (let index = 0; index < clearsDisplay.length; index++) {
+                  if (clearsDisplay[index]) {
+                    lastClearIndex = index;
+                  }
+                }
                 return {
                   ...team,
                   clears: clearsDisplay,
-                  lastClear: clearsDisplay.length
+                  lastClear: lastClearIndex + 1,
+                  lastClearDate: clearsDisplay[lastClearIndex]?.date,
                 }
               })
               .sort((a, b) => {

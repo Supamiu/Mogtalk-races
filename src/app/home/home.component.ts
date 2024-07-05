@@ -1,7 +1,7 @@
 import {Component, inject} from '@angular/core';
 import {RaceService} from "../database/race.service";
-import {Timestamp, where} from "@angular/fire/firestore";
-import {map, shareReplay} from "rxjs";
+import {orderBy, Timestamp, where} from "@angular/fire/firestore";
+import {map, of, shareReplay, switchMap} from "rxjs";
 import {AsyncPipe, DatePipe, UpperCasePipe} from "@angular/common";
 import {LeaderboardComponent} from "../leaderboard/leaderboard.component";
 import {NzFlexDirective} from "ng-zorro-antd/flex";
@@ -37,6 +37,14 @@ export class HomeComponent {
   runningRace$ = this.#raceService.query(where('start', '<=', Timestamp.now())).pipe(
     map(races => {
       return races.filter(r => !r.stopped)[0]
+    }),
+    switchMap(race => {
+      if (!race) {
+        return this.#raceService.query(where('start', '>', Timestamp.now()), orderBy('start')).pipe(
+          map(races => races[0])
+        )
+      }
+      return of(race)
     }),
     shareReplay(1)
   )
