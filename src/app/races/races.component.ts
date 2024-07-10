@@ -22,6 +22,7 @@ import {NzModalService} from "ng-zorro-antd/modal";
 import {RaceCreationPopupComponent} from "./race-creation-popup/race-creation-popup.component";
 import {Race} from "../model/race";
 import {NzFlexDirective} from "ng-zorro-antd/flex";
+import {orderBy} from "@angular/fire/firestore";
 
 @Component({
   selector: 'app-races',
@@ -38,7 +39,7 @@ export class RacesComponent {
 
   #dialog = inject(NzModalService);
 
-  public races$ = this.#raceService.query().pipe(
+  public races$ = this.#raceService.query(orderBy('start', 'desc')).pipe(
     map(races => {
       return races.map(race => {
         return {
