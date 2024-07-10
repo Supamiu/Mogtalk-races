@@ -87,7 +87,7 @@
           }
         </div>
       } @else {
-        <nz-table #teamsTable [nzData]="teams" [nzPageSize]="10" [nzNoResult]="emptyTpl" nzHideOnSinglePage>
+        <nz-table #teamsTable [nzData]="teams" [nzPageSize]="50" [nzNoResult]="emptyTpl" nzHideOnSinglePage>
           <thead>
           <tr>
             @for (column of columns$ | async; track column.name) {
