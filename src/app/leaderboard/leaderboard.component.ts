@@ -30,6 +30,7 @@ import {NzColDirective, NzRowDirective} from "ng-zorro-antd/grid";
 import {FontAwesomeModule} from "@fortawesome/angular-fontawesome";
 import {faDiscord, faTwitter, faYoutube} from "@fortawesome/free-brands-svg-icons";
 import {faEnvelope} from "@fortawesome/free-solid-svg-icons";
+import {chunk} from "lodash";
 
 @Component({
   selector: 'app-leaderboard',
@@ -168,7 +169,9 @@ export class LeaderboardComponent {
   teams$: Observable<LeaderboardEntry[]> = combineLatest([this.race$, this.reports$]).pipe(
     switchMap(([race, reports]) => {
       if (race.teams.length > 0) {
-        return this.#teamsService.query(where(documentId(), 'in', race.teams)).pipe(
+        const chunks = chunk(race.teams, 30);
+        return combineLatest(chunks.map(teams => this.#teamsService.query(where(documentId(), 'in', teams)))).pipe(
+          map(teamChunks => teamChunks.flat()),
           map(teams => {
             return teams
               .map((team, i) => {
