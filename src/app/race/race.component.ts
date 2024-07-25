@@ -18,8 +18,10 @@ import {NzDividerComponent} from "ng-zorro-antd/divider";
 import {NzSpinComponent} from "ng-zorro-antd/spin";
 import {LeaderboardComponent} from "../leaderboard/leaderboard.component";
 import {NzFlexDirective} from "ng-zorro-antd/flex";
-import {NzTransitionPatchDirective} from "ng-zorro-antd/core/transition-patch/transition-patch.directive";
-import {NzWaveDirective} from "ng-zorro-antd/core/wave";
+import {NzTooltipDirective} from "ng-zorro-antd/tooltip";
+import {NzIconDirective} from "ng-zorro-antd/icon";
+import {NzDatePickerComponent} from "ng-zorro-antd/date-picker";
+import {FormsModule} from "@angular/forms";
 
 @Component({
   selector: 'app-race',
@@ -39,7 +41,11 @@ import {NzWaveDirective} from "ng-zorro-antd/core/wave";
     NzPageHeaderExtraDirective,
     LeaderboardComponent,
     NzFlexDirective,
-    UpperCasePipe
+    UpperCasePipe,
+    NzTooltipDirective,
+    NzIconDirective,
+    NzDatePickerComponent,
+    FormsModule
   ],
   templateUrl: './race.component.html',
   styleUrls: ['./race.component.less']
@@ -74,8 +80,21 @@ export class RaceComponent {
 
   userIsTracker$ = this.#authService.userIsTracker$;
 
+  editEndTime?: Date;
+  editStartTime?: Date;
+
   stopRace(race: Race): void {
     this.#raceService.updateOne(race.$key, {stopped: Timestamp.now()});
+  }
+
+  setRaceEndDate(race: Race, date: Date): void {
+    this.#raceService.updateOne(race.$key, {stopped: Timestamp.fromDate(date)});
+    delete this.editEndTime;
+  }
+
+  setRaceStartDate(race: Race, date: Date): void {
+    this.#raceService.updateOne(race.$key, {stopped: Timestamp.fromDate(date)});
+    delete this.editEndTime;
   }
 
   registerTeam(race: Race): void {

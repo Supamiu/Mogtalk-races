@@ -6,13 +6,37 @@
           @switch (status$ | async) {
             @case ("Running") {
               Running since {{ race.start.toDate() | date:'short' }}
+              @if(userIsTracker$ | async) {
+                <button nz-button nzSize="small" (click)="editStartTime = race.start!.toDate()" nzShape="circle" nz-tooltip nzTooltipTitle="Edit start time"><span nz-icon nzType="edit" nzTheme="outline"></span></button>
+                @if(editStartTime) {
+                  <nz-date-picker nzInline nzShowTime [(ngModel)]="editStartTime" (nzOnOk)="setRaceStartDate(race, editStartTime)"></nz-date-picker>
+                }
+              }
             }
             @case ("Planned") {
               Starting {{ race.start.toDate() | date:'short' }}
+              @if(userIsTracker$ | async) {
+                <button nz-button nzSize="small" (click)="editStartTime = race.start!.toDate()" nzShape="circle" nz-tooltip nzTooltipTitle="Edit start time"><span nz-icon nzType="edit" nzTheme="outline"></span></button>
+                @if(editStartTime) {
+                  <nz-date-picker nzInline nzShowTime [(ngModel)]="editStartTime" (nzOnOk)="setRaceStartDate(race, editStartTime)"></nz-date-picker>
+                }
+              }
             }
             @case ('Stopped') {
               Started {{ race.start.toDate() | date:'short' }}
+              @if(userIsTracker$ | async) {
+                <button nz-button nzSize="small" (click)="editStartTime = race.start!.toDate()" nzShape="circle" nz-tooltip nzTooltipTitle="Edit start time"><span nz-icon nzType="edit" nzTheme="outline"></span></button>
+                @if(editStartTime) {
+                  <nz-date-picker nzInline nzShowTime [(ngModel)]="editStartTime" (nzOnOk)="setRaceStartDate(race, editStartTime)"></nz-date-picker>
+                }
+              }
               Ended {{ race.stopped?.toDate() | date:'short' }}
+              @if(userIsTracker$ | async) {
+                <button nz-button nzSize="small" (click)="editEndTime = race.stopped!.toDate()" nzShape="circle" nz-tooltip nzTooltipTitle="Edit end time"><span nz-icon nzType="edit" nzTheme="outline"></span></button>
+                @if(editEndTime) {
+                  <nz-date-picker nzInline nzShowTime [(ngModel)]="editEndTime" (nzOnOk)="setRaceEndDate(race, editEndTime)"></nz-date-picker>
+                }
+              }
             }
           }
           - {{ race.type | uppercase }}
