@@ -88,12 +88,12 @@ export class RaceComponent {
   }
 
   setRaceEndDate(race: Race, date: Date): void {
-    this.#raceService.updateOne(race.$key, {start: Timestamp.fromDate(date)});
+    this.#raceService.updateOne(race.$key, {stopped: Timestamp.fromDate(date)});
     delete this.editEndTime;
   }
 
   setRaceStartDate(race: Race, date: Date): void {
-    this.#raceService.updateOne(race.$key, {stopped: Timestamp.fromDate(date)});
+    this.#raceService.updateOne(race.$key, {start: Timestamp.fromDate(date)});
     delete this.editStartTime;
   }
 
