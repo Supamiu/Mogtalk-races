@@ -1,4 +1,4 @@
-import {Component, inject} from '@angular/core';
+import {Component, inject, OnInit} from '@angular/core';
 import {FormArray, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
 import {ImageCroppedEvent, ImageCropperModule} from "ngx-image-cropper";
 import {NgForOf, NgIf} from "@angular/common";
@@ -17,7 +17,7 @@ import {getDownloadURL, ref, Storage, uploadBytesResumable} from "@angular/fire/
 import {Race} from "../../model/race";
 import {NzMessageService} from "ng-zorro-antd/message";
 import {RaceService} from "../../database/race.service";
-import {NzModalRef} from "ng-zorro-antd/modal";
+import {NZ_MODAL_DATA, NzModalRef} from "ng-zorro-antd/modal";
 
 @Component({
   selector: 'app-race-creation-popup',
@@ -49,7 +49,7 @@ import {NzModalRef} from "ng-zorro-antd/modal";
   templateUrl: './race-creation-popup.component.html',
   styleUrl: './race-creation-popup.component.less'
 })
-export class RaceCreationPopupComponent {
+export class RaceCreationPopupComponent implements OnInit {
   #afs = inject(Storage);
 
   #raceService = inject(RaceService);
@@ -58,16 +58,18 @@ export class RaceCreationPopupComponent {
 
   #ref = inject(NzModalRef);
 
+  protected race = inject(NZ_MODAL_DATA, {optional: true});
+
   public imageChangedEvent: any = '';
   public croppedImage: any = '';
   public savingImage = false;
 
   newRaceForm = new FormGroup({
-    name: new FormControl('', Validators.required),
-    start: new FormControl<number>(Date.now()),
-    type: new FormControl('', Validators.required),
+    name: new FormControl(this.race?.name || '', Validators.required),
+    start: new FormControl<number>(this.race?.start?.toDate() || Date.now()),
+    type: new FormControl(this.race?.type || '', Validators.required),
     phases: new FormArray<FormControl<string | null>>([]),
-    banner: new FormControl('', Validators.required)
+    banner: new FormControl(this.race?.banner || '', Validators.required)
   });
 
   fileChangeEvent(event: any): void {
@@ -101,21 +103,39 @@ export class RaceCreationPopupComponent {
     this.newRaceForm.controls.phases.removeAt(index);
   }
 
-  addPhase(): void {
-    this.newRaceForm.controls.phases.push(new FormControl(`P${this.newRaceForm.controls.phases.length + 1}`, Validators.required))
+  addPhase(name?: string): void {
+    this.newRaceForm.controls.phases.push(new FormControl(name || `P${this.newRaceForm.controls.phases.length + 1}`, Validators.required))
   }
 
-  createRace(): void {
+  submit(): void {
     const race: Race = {
       ...(this.newRaceForm.getRawValue() as any),
       teams: []
     };
+    if(this.race) {
+      // EDIT
+      this.#raceService.setOne(this.race.$key, race).subscribe(() => {
+        this.#notification.success('Race has been created !');
+        this.newRaceForm.reset();
+        this.croppedImage = '';
+        this.#ref.close();
+      });
+    } else {
+      // CREATE
+      this.#raceService.addOne(race).subscribe(() => {
+        this.#notification.success('Race has been created !');
+        this.newRaceForm.reset();
+        this.croppedImage = '';
+        this.#ref.close();
+      });
+    }
+  }
 
-    this.#raceService.addOne(race).subscribe(() => {
-      this.#notification.success('Race has been created !');
-      this.newRaceForm.reset();
-      this.croppedImage = '';
-      this.#ref.close();
-    });
+  ngOnInit(): void {
+    if (this.race) {
+      this.race.phases.forEach((phase: string) => {
+        this.addPhase(phase)
+      })
+    }
   }
 }

@@ -1,4 +1,4 @@
-<form nz-form [formGroup]="newRaceForm" class="login-form" (ngSubmit)="createRace()">
+<form nz-form [formGroup]="newRaceForm" class="login-form" (ngSubmit)="submit()">
   <nz-form-item>
     <nz-form-label nzRequired>Name</nz-form-label>
     <nz-form-control nzErrorTip="Please input a name">
@@ -77,5 +77,9 @@
     Add a phase
   </button>
   <nz-divider></nz-divider>
-  <button nz-button [nzType]="'primary'" [disabled]="!newRaceForm.valid" nzBlock>Create a race</button>
+  @if(race) {
+    <button nz-button [nzType]="'primary'" [disabled]="!newRaceForm.valid" nzBlock>Save changes</button>
+  } @else {
+    <button nz-button [nzType]="'primary'" [disabled]="!newRaceForm.valid" nzBlock>Create a race</button>
+  }
 </form>

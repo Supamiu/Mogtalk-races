@@ -62,6 +62,15 @@ export class RacesComponent {
     map(user => user.admin || user.tracker)
   );
 
+  editRace(race: Race):void{
+    this.#dialog.create({
+      nzTitle: 'New race',
+      nzContent: RaceCreationPopupComponent,
+      nzData: race,
+      nzFooter: null
+    });
+  }
+
   createRace(): void {
     this.#dialog.create({
       nzTitle: 'New race',

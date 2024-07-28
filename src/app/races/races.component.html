@@ -12,6 +12,9 @@
     <nz-col [nzLg]="8" *ngFor="let race of races$ | async">
       <div class="race-row" routerLink="/race/{{race.$key}}/{{race.name}}">
         <div class="race-row-content">
+          @if(userIsTracker$ | async) {
+            <button nz-button nzType="primary" class="edit-button" (click)="$event.stopPropagation();editRace(race)"><span nz-icon nzType="edit" nzTheme="outline"></span></button>
+          }
           <img [src]="race.banner" class="race-banner" alt="">
           <div class="status">
             @switch (race.status) {
